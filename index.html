@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<!---
+   
+   RunUp • An intuitive countdown and segment timer for live events
+   Initial: v2026.07.14
+   Codecrafted by hello@stefanushosea.com
+
+--->
+<html dev="stefanus@hosea.id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RunUp</title>
+    <meta property="og:title" content="RunUp"/>
+    <meta name="description" content="An intuitive countdown and segment timer for live events • Codecrafted by stefanus@hosea.id">
+    <meta property="og:description" content="An intuitive countdown and segment timer for live events • Codecrafted by stefanus@hosea.id">
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://runUp.hosea.id"/>
+    <meta property="og:image" content="https://runUp.hosea.id/share.jpg"/>
+    <meta property="og:image:type" content="image/jpeg"/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta name="author" content="Stefanus Hosea"/>
+    <meta name="keywords" content="runup, run, time, countdown, clock, timer, presenter, presentation"/>
+    <meta property="og:site_name" content="RunUp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="RunUp"/>
+    <meta name="application-name" content="RunUp"/>
+    <link rel="apple-touch-icon" href="https://runUp.hosea.id/apple-touch-icon.png"/>
+    <meta name="theme-color" content="#242424"/>
+    <meta name="msapplication-navbutton-color" content="#242424"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;1,200;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: rgba(0,0,0,.5);
+            --bg-light: rgba(255,255,255,.15);
+            --border-light: rgba(255,255,255,.5);
+            --text-light: #aaa;
+            --text-dark: #000000;
+            --text-dim: #888888;
+            --accent-red: #b10000;
+            --border-color: #dddddd;
+            --input-bg: #ffffff;
+            --font-main: 'Bai Jamjuree', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            font-weight: 300;
+            overflow: hidden; /* Prevent scrolling on main views */
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* --- UTILITY CLASSES --- */
+        .hidden { display: none !important; }
+        .invisible { visibility: hidden; }
+
+        /* --- BUTTONS --- */
+        button {
+            font-family: var(--font-main);
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .pill-btn {
+            background-color: rgba(128, 128, 128, 0.15);
+            color: inherit;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-size: 12px;
+            border: 1px solid currentColor;
+            opacity: 0.8;
+        }
+        
+        .pill-btn:hover { 
+            background-color: rgba(128, 128, 128, 0.3); 
+            opacity: 1;
+        }
+        
+        .pill-btn.outline {
+            background-color: transparent;
+            color: inherit;
+            border: 1px solid currentColor;
+            padding: 6px 16px;
+        }
+        .pill-btn.outline:hover { background-color: rgba(128,128,128,0.15); }
+
+        .pill-btn.filled { 
+            background-color: rgba(128, 128, 128, 0.15); 
+            color: inherit; 
+            border: 1px solid currentColor;
+            border-radius: 4px; 
+            padding: 6px 16px; 
+        }
+        .pill-btn.filled:hover { background-color: rgba(128, 128, 128, 0.3); }
+        .pill-btn.filled.active { 
+            background-color: var(--bg-dark); 
+            color: white;
+            border-color: var(--bg-dark);
+        }
+
+        .pill-btn.small { padding: 4px 12px; font-size: 14px; border-radius: 4px;}
+
+        /* --- VIEWS --- */
+        .view-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================================
+           PROGRAM VIEW (MAIN BROWSER)
+           ========================================= */
+        #program-view {
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Top Display Area */
+        .prog-display-area {
+            flex: 0 0 65%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 20px 40px;
+            background-image: linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,0) 50%);
+        }
+
+        .prog-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: auto;
+        }
+
+        .prog-header .logo {
+            font-size: 18px;
+            font-weight: 300;
+            opacity: .45;
+            transition: opacity .5s ease;
+        }
+        .logo strong {
+            font-weight: 400
+        }
+        .prog-header .version {
+            font-size: 8px;
+            margin-left: 2.5px;
+            vertical-align: super;
+            opacity: .6;
+        }
+        .prog-header .credit {
+            font-size: 10px;
+            opacity: .25;
+            transition: opacity .5s ease;
+        }
+        .prog-header .credit strong {
+            font-weight: 500;
+        }
+        .prog-display-area:hover .credit {
+            opacity: .6;
+        }
+        .prog-display-area:hover .logo{
+            opacity: .85;
+        }
+        .prog-header .credit:hover {
+            opacity: .85;
+        }
+        .prog-header .credit a:hover {
+            opacity: 1;
+        }
+
+        .prog-main-clock {
+            text-align: center;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .segment-title {
+            font-size: clamp(20px, 5vw, 45px);
+            font-weight: 600;
+            line-height: 1.1;
+            margin-bottom: .5vh;
+            min-height: 1.2em;
+            padding: 0 2.5vw;
+        }
+        .live-clock {
+            font-size: clamp(30px, 15vw, 200px);
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 10px;
+            letter-spacing: -2px;
+            mask: linear-gradient(black 50%, rgba(0,0,0,.75))
+        }
+        .countdown {
+            font-size: clamp(20px, 4vw, 45px);
+            font-weight: 400;
+            color: inherit;
+            min-height: 1.2em;
+            opacity: .5
+        }
+
+        .prog-display-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-bottom: 10px;
+        }
+
+        /* Bottom Control Area */
+        .prog-control-area {
+            flex: 1;
+            display: flex;
+            padding: 20px 40px;
+            gap: 40px;
+            overflow-y: auto;
+            background-image: linear-gradient(rgba(255, 255, 255, .2), rgba(255, 255, 255, .4));
+        }
+
+        .table-section {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .table-responsive::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+        }
+
+        .table-responsive {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        th {
+            text-align: left;
+            font-size: 12px;
+            color: inherit;
+            opacity: 0.5;
+            font-weight: 600;
+            padding: 0 4px 8px;
+        }
+
+        td {
+            padding: 4px;
+        }
+
+        .table-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid rgba(128,128,128,0.3);
+            background-color: var(--input-bg);
+            font-family: var(--font-main);
+            font-size: 14px;
+            color: #000000;
+        }
+        
+        .table-input.time-input { text-align: center; min-width: 90px; }
+        .table-input.color-input { padding: 0; width: 32px; height: 32px; cursor: pointer; border: none; background: none; }
+
+        .row-controls {
+            display: flex;
+            gap: 4px;
+            justify-content: flex-end;
+            align-items: center;
+            color: inherit;
+        }
+        
+        .row-controls button {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            opacity: 0.5;
+            transition: opacity 0.2s ease;
+        }
+        .row-controls button:hover { opacity: 1; }
+        .drag-handle {
+            cursor: grab !important;
+            font-size: 25px !important;
+            line-height: 0;
+            margin-top: -5px;
+        }
+
+        .row-controls button:hover{
+            opacity: .75;
+        }
+        
+        tr.dragging { opacity: 0.5; background-color: rgba(128,128,128,0.1); }
+
+        .bottom-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .file-actions { display: flex; gap: 10px; }
+
+        .message-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 250px;
+        }
+
+        .section-label {
+            font-size: 12px;
+            color: inherit;
+            opacity: 0.5;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        #message-input {
+            flex: 1;
+            resize: none;
+            padding: 12px;
+            border: 1px solid rgba(128,128,128,0.3);
+            background-color: var(--input-bg);
+            color: #000000;
+            font-family: var(--font-main);
+            font-size: 14px;
+            margin-bottom: 10px;
+            min-height: 150px;
+        }
+
+        .msg-btn-container { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center; 
+        }
+
+        .msg-color-presets {
+            display: flex;
+            gap: 8px;
+        }
+
+        .color-preset-btn {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-image: linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,0));
+            cursor: pointer;
+            padding: 0;
+            transition: transform 0.2s ease filter .5s ease;
+        }
+
+        .color-preset-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .color-preset-btn.active {
+            filter: brightness(1.15);
+        }
+
+        /* =========================================
+           LIVE VIEW (POPUP WINDOW)
+           ========================================= */
+        #live-view {
+            transition: background-color 0.4s ease, color 0.4s ease;
+            justify-content: space-between;
+        }
+
+        .live-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-top: 5vh;
+            background-image: linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,0) 50%);
+        }
+
+        #live-view .segment-title { font-size: 4vw; margin-bottom: 1vh; }
+        #live-view .live-clock { font-size: 15vw; margin-bottom: 1vh; }
+        #live-view .countdown { font-size: 5vw; }
+
+        .live-message-banner {
+            background-color: var(--accent-red);
+            color: white;
+            font-size: 3vw;
+            font-weight: 600;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            /* Slide entrance/exit transitions */
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+            background-image: linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,0));
+        }
+
+        .live-message-banner.msg-visible {
+            max-height: 10vh; /* Enough to display content */
+            opacity: 1;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            padding: 1.5vh 0; /* Padding moved inside for smooth collapse */
+        }
+
+        .static-measure {
+            display: inline-block;
+            padding-left: 0;
+            white-space: nowrap;
+        }
+
+        .marquee-static {
+            display: block;
+            text-align: center;
+            padding-left: 0;
+        }
+
+        .marquee-active {
+            padding-left: 100%;
+            animation: marquee 20s linear infinite;
+        }
+        
+        /* Stop animation if content is short enough, managed via JS optionally, but CSS infinite is fine */
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        .live-footer {
+            background-image: linear-gradient(#fff, rgba(255, 255, 255, .75)); 
+            color: var(--text-dark);
+            padding: 2vh 4vw;
+            display: flex;
+            flex-direction: column;
+            height: 12.5vh;
+            justify-content: center;
+        }
+
+        .live-footer .next-label {
+            font-size: 1vw;
+            font-weight: 700;
+            color: rgba(0,0,0,.35);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .live-footer .next-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 2.5vw;
+            font-weight: 600;
+            line-height: 1.1;
+        }
+
+        /* Markdown bold/italic styling */
+        b, strong { font-weight: 700; }
+        i, em { font-style: italic; }
+
+        /* Sleek Digit Transition & States */
+        .live-clock, .countdown { font-variant-numeric: tabular-nums; }
+        .digit { display: inline-block; min-width: 0.65em; text-align: center; }
+        .live-clock .digit:nth-child(3), .live-clock .digit:nth-child(6) { margin: 0 -2.5vw; }
+        .countdown .digit:nth-child(3), .countdown .digit:nth-child(6) { margin: 0 -.5vw; }
+        .digit-fade { animation: digitFadeIn 0.3s ease-out; }
+        @keyframes digitFadeIn {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .swipe-up { animation: swipeUpAnim 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes swipeUpAnim {
+            0% { transform: translateY(30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        .readonly-input {
+            background-color: transparent;
+            border-color: transparent;
+            color: inherit;
+            opacity: 0.7;
+            cursor: default;
+        }
+        .readonly-input:focus { outline: none; }
+
+        /* --- RESPONSIVENESS --- */
+        @media (max-width: 768px) {
+            .prog-display-area { padding: 15px 20px; flex: 0 0 auto; min-height: 45vh; }
+            .prog-control-area { padding: 25px 20px; flex-direction: column; gap: 25px; }
+            .prog-header { margin-bottom: 20px; }
+            .prog-display-controls { margin-top: 20px; gap: 10px; }
+            .table-input.time-input { min-width: 75px; font-size: 12px; }
+            .table-input.title-input { min-width: 90px; font-size: 12px; }
+            .file-actions { flex-wrap: wrap; }
+            .bottom-actions { flex-wrap: wrap; gap: 10px; }
+            #message-input { min-height: 50px; font-size: 12px; }
+            .table-responsive { mask: linear-gradient(90deg, black 90%, transparent) }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- ================= PROGRAM VIEW ================= -->
+    <div id="program-view" class="view-container">
+        <!-- Top Half (Black) -->
+        <div id="prog-display-area" class="prog-display-area">
+            <div class="prog-header">
+                <div class="logo">Run<strong>Up</strong><span class="version">v2026.07.14.2240</span></div>
+                <div class="credit">Codecrafted by <a href="https://stefanus.hosea.id" target="_blank"><strong>Stefanus Hosea</strong></a></div>
+            </div>
+            
+            <div class="prog-main-clock">
+                <div id="prog-title" class="segment-title"></div>
+                <div id="prog-clock" class="live-clock">00:00:00</div>
+                <div id="prog-countdown" class="countdown"></div>
+            </div>
+
+            <div class="prog-display-controls">
+                <button id="btn-quick-next" class="pill-btn">QUICK NEXT</button>
+                <button id="btn-present" class="pill-btn">PRESENT</button>
+            </div>
+        </div>
+
+        <!-- Bottom Half (Gray) -->
+        <div class="prog-control-area">
+            <!-- Left: Table -->
+            <div class="table-section">
+                <div class="table-responsive">
+                    <table id="segment-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">START</th>
+                                <th style="width: 15%;">END</th>
+                                <th style="width: 45%;">TITLE</th>
+                                <th style="width: 15%;">DURATION</th>
+                                <th style="width: 5%;">COLOR</th>
+                                <th style="width: 5%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Rows rendered via JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bottom-actions">
+                    <div class="file-actions">
+                        <button id="btn-load" class="pill-btn outline">LOAD</button>
+                        <button id="btn-export" class="pill-btn outline">EXPORT</button>
+                        <input type="file" id="file-input" accept=".run" class="hidden">
+                    </div>
+                    <button id="btn-add-row" class="pill-btn outline small">+ ADD</button>
+                </div>
+            </div>
+
+            <!-- Right: Message -->
+            <div class="message-section">
+                <div class="section-label">MESSAGE</div>
+                <textarea id="message-input" placeholder="Message Text Input with **Markdown Formatting**"></textarea>
+                <div class="msg-btn-container">
+                    <div class="msg-color-presets" id="msg-color-presets">
+                        <button class="color-preset-btn" data-bg="#b10000" data-color="#ffffff" style="background-color: #b10000;" title="Red"></button>
+                        <button class="color-preset-btn" data-bg="#fdee00" data-color="#000000" style="background-color: #fdee00;" title="Yellow"></button>
+                        <button class="color-preset-btn" data-bg="#ffffff" data-color="#000000" style="background-color: #ffffff;" title="White"></button>
+                        <button class="color-preset-btn" data-bg="#000000" data-color="#ffffff" style="background-color: #000000;" title="Black"></button>
+                    </div>
+                    <button id="btn-show-msg" class="pill-btn filled">SHOW</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= LIVE VIEW (POPUP) ================= -->
+    <div id="live-view" class="view-container hidden">
+        <div class="live-main">
+            <div id="live-title" class="segment-title"></div>
+            <div id="live-clock" class="live-clock">00:00:00</div>
+            <div id="live-countdown" class="countdown"></div>
+        </div>
+        
+        <div id="live-msg-container" class="live-message-banner">
+            <div id="live-marquee" class="marquee-content"></div>
+        </div>
+
+        <div id="live-footer" class="live-footer">
+            <div class="next-label">UPCOMING NEXT</div>
+            <div class="next-info">
+                <span id="live-next-title">--</span>
+                <span id="live-next-time">--:--</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * RUNUP APP LOGIC
+         * Handles state, time calculation, UI binding, and cross-window sync.
+         */
+
+        // --- GLOBAL STATE ---
+        const AppState = {
+            segments: [],
+            message: '',
+            showMessage: false,
+            messageBg: '#b10000',
+            messageColor: '#ffffff'
+        };
+
+        const STORAGE_KEY = 'runup_app_state';
+
+        function saveStateToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(AppState));
+        }
+
+        function loadStateFromStorage() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    // Fallback to parsed.schedules for older saves backwards compatibility
+                    AppState.segments = parsed.segments || parsed.schedules || [];
+                    AppState.message = parsed.message || '';
+                    AppState.showMessage = parsed.showMessage || false;
+                    AppState.messageBg = parsed.messageBg || '#b10000';
+                    AppState.messageColor = parsed.messageColor || '#ffffff';
+                } catch(e) {}
+            }
+        }
+
+        // Channel for syncing between Program and Live views
+        const syncChannel = new BroadcastChannel('runup_sync_channel');
+        
+        // Mode detection
+        const urlParams = new URLSearchParams(window.location.search);
+        const isLiveView = urlParams.get('view') === 'live';
+
+        // --- UTILS ---
+        function timeToSeconds(timeStr) {
+            if (!timeStr) return 0;
+            const parts = timeStr.split(':').map(Number);
+            return (parts[0] || 0) * 3600 + (parts[1] || 0) * 60 + (parts[2] || 0);
+        }
+
+        function secondsToTime(totalSeconds) {
+            const isNeg = totalSeconds < 0;
+            let s = Math.abs(totalSeconds);
+            s = s % 86400; // Enforce 24-hour wrap
+            const h = Math.floor(s / 3600);
+            const m = Math.floor((s % 3600) / 60);
+            const sec = Math.floor(s % 60);
+            const formatted = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+            return isNeg ? `-${formatted}` : formatted;
+        }
+
+        function getCurrentSeconds() {
+            const now = new Date();
+            return now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+        }
+
+        function parseMarkdown(text) {
+            if (!text) return '';
+            // Basic bold and italic parsing
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                .replace(/\*(.*?)\*/g, '<i>$1</i>');
+        }
+
+        // Calculate contrast color (black or white) dynamically based on background luminance
+        function getContrastYIQ(hexcolor) {
+            if (!hexcolor) return '#ffffff';
+            hexcolor = hexcolor.replace("#", "");
+            if (hexcolor.length === 3) {
+                 hexcolor = hexcolor.split('').map(x => x + x).join('');
+            }
+            var r = parseInt(hexcolor.substr(0,2),16);
+            var g = parseInt(hexcolor.substr(2,2),16);
+            var b = parseInt(hexcolor.substr(4,2),16);
+            var yiq = ((r*299)+(g*587)+(b*114))/1000;
+            return (yiq >= 128) ? '#000000' : '#ffffff';
+        }
+
+        // --- NEW FEATURES UTILS ---
+        function updateFadingDigits(el, newText) {
+            if (el.textContent === newText) return;
+            
+            // Rebuild spans if empty or layout changed
+            if (el.children.length !== newText.length || !el.firstElementChild?.classList.contains('digit')) {
+                el.innerHTML = '';
+                for (let i = 0; i < newText.length; i++) {
+                    const span = document.createElement('span');
+                    span.className = 'digit';
+                    span.textContent = newText[i];
+                    el.appendChild(span);
+                }
+                return;
+            }
+            
+            // Check individual characters to prevent flickering
+            for (let i = 0; i < newText.length; i++) {
+                const span = el.children[i];
+                if (span.textContent !== newText[i]) {
+                    span.textContent = newText[i];
+                    span.classList.remove('digit-fade');
+                    void span.offsetWidth; // Trigger reflow
+                    span.classList.add('digit-fade');
+                }
+            }
+        }
+
+        function cascadeTimes(fromIndex = 1) {
+            for (let i = fromIndex; i < AppState.segments.length; i++) {
+                if (i > 0) {
+                    AppState.segments[i].start = AppState.segments[i-1].end;
+                }
+                AppState.segments[i].end = secondsToTime(timeToSeconds(AppState.segments[i].start) + timeToSeconds(AppState.segments[i].duration));
+            }
+        }
+
+        // --- DOM ELEMENTS ---
+        const els = {
+            progView: document.getElementById('program-view'),
+            liveView: document.getElementById('live-view'),
+            
+            // Program Display
+            progDisplayArea: document.getElementById('prog-display-area'),
+            pTitle: document.getElementById('prog-title'),
+            pClock: document.getElementById('prog-clock'),
+            pCountdown: document.getElementById('prog-countdown'),
+            
+            // Live Display
+            lTitle: document.getElementById('live-title'),
+            lClock: document.getElementById('live-clock'),
+            lCountdown: document.getElementById('live-countdown'),
+            lNextTitle: document.getElementById('live-next-title'),
+            lNextTime: document.getElementById('live-next-time'),
+            lFooter: document.getElementById('live-footer'),
+            lMsgContainer: document.getElementById('live-msg-container'),
+            lMarquee: document.getElementById('live-marquee'),
+
+            // Controls
+            tbody: document.getElementById('table-body'),
+            msgInput: document.getElementById('message-input'),
+            btnShowMsg: document.getElementById('btn-show-msg'),
+            colorPresets: document.querySelectorAll('.color-preset-btn'),
+            btnPresent: document.getElementById('btn-present'),
+            btnQuickNext: document.getElementById('btn-quick-next'),
+            btnAddRow: document.getElementById('btn-add-row'),
+            btnLoad: document.getElementById('btn-load'),
+            btnExport: document.getElementById('btn-export'),
+            fileInput: document.getElementById('file-input')
+        };
+
+        let lastActiveSegmentId = null;
+
+        // --- CORE CLOCK ENGINE ---
+        function updateClockLoop() {
+            const nowSecs = getCurrentSeconds();
+            const nowTimeStr = secondsToTime(nowSecs);
+            
+            // Update document window title with live clock
+            document.title = nowTimeStr + (isLiveView ? "" : " • RunUp");
+            
+            // Update physical clocks with fading transition
+            if (isLiveView) updateFadingDigits(els.lClock, nowTimeStr);
+            else updateFadingDigits(els.pClock, nowTimeStr);
+
+            // Determine current and next segment
+            let currentSegment = null;
+            let nextSegment = null;
+            let currentCountdown = 0;
+
+            for (let i = 0; i < AppState.segments.length; i++) {
+                const seg = AppState.segments[i];
+                const startSec = timeToSeconds(seg.start);
+                let endSec = timeToSeconds(seg.end);
+
+                // Cross-midnight handling
+                if (endSec <= startSec) endSec += 86400;
+                
+                let effNowSec = nowSecs;
+                if (endSec > 86400 && nowSecs < (endSec - 86400)) {
+                    effNowSec += 86400;
+                }
+
+                if (effNowSec >= startSec && effNowSec < endSec) {
+                    currentSegment = seg;
+                    currentCountdown = endSec - effNowSec;
+                    if (i + 1 < AppState.segments.length) {
+                        nextSegment = AppState.segments[i + 1];
+                    }
+                    break;
+                } else if (startSec > effNowSec && !currentSegment && !nextSegment) {
+                    // Found the first upcoming segment if none is currently active
+                    nextSegment = seg;
+                }
+            }
+
+            // Trigger Swipe-up Animation on segment change
+            if (currentSegment?.id !== lastActiveSegmentId) {
+                lastActiveSegmentId = currentSegment?.id;
+                [els.lTitle, els.pTitle, els.lCountdown, els.pCountdown].forEach(el => {
+                    el.classList.remove('swipe-up');
+                    void el.offsetWidth; // Trigger reflow
+                    el.classList.add('swipe-up');
+                });
+            }
+
+            // Apply background colors dynamically to the entire view body based on current segment
+            const defaultBg = '#0a0a0a';
+            const activeColor = currentSegment && currentSegment.color ? currentSegment.color : defaultBg;
+            const contrastColor = getContrastYIQ(activeColor);
+            
+            if (isLiveView) {
+                els.liveView.style.backgroundColor = activeColor;
+                els.liveView.style.color = contrastColor;
+            } else {
+                els.progView.style.backgroundColor = activeColor;
+                els.progView.style.color = contrastColor;
+            }
+
+            // Render Info based on View
+            if (isLiveView) {
+                if (currentSegment) {
+                    els.lTitle.textContent = currentSegment.title;
+                    els.lTitle.classList.remove('invisible');
+                    updateFadingDigits(els.lCountdown, secondsToTime(currentCountdown));
+                    els.lCountdown.classList.remove('invisible');
+                } else {
+                    els.lTitle.classList.add('invisible');
+                    els.lCountdown.classList.add('invisible');
+                }
+
+                if (nextSegment) {
+                    els.lNextTitle.textContent = nextSegment.title;
+                    els.lNextTime.textContent = nextSegment.start.substring(0, 5); // HH:mm
+                    els.lFooter.classList.remove('hidden');
+                } else {
+                    els.lFooter.classList.add('hidden');
+                }
+            } else {
+                if (currentSegment) {
+                    els.pTitle.textContent = currentSegment.title;
+                    els.pTitle.classList.remove('invisible');
+                    updateFadingDigits(els.pCountdown, secondsToTime(currentCountdown));
+                    els.pCountdown.classList.remove('invisible');
+                } else {
+                    els.pTitle.classList.add('invisible');
+                    els.pCountdown.classList.add('invisible');
+                }
+
+                // Hide quick next if there's no upcoming segment
+                if (nextSegment) {
+                    els.btnQuickNext.classList.remove('invisible');
+                } else {
+                    els.btnQuickNext.classList.add('invisible');
+                }
+            }
+
+            requestAnimationFrame(updateClockLoop);
+        }
+
+
+        // --- PROGRAM VIEW LOGIC (Controls) ---
+
+        function renderTable() {
+            els.tbody.innerHTML = '';
+            AppState.segments.forEach((seg, index) => {
+                const tr = document.createElement('tr');
+                tr.draggable = true;
+                tr.dataset.index = index;
+                
+                // Enforce start time contiguity
+                const isReadonly = index > 0 ? 'readonly tabindex="-1"' : '';
+                const roClass = index > 0 ? 'readonly-input' : '';
+
+                tr.innerHTML = `
+                    <td><input type="text" class="table-input time-input start-input ${roClass}" value="${seg.start}" ${isReadonly} title="${index > 0 ? 'Auto-calculated sequence' : ''}"></td>
+                    <td><input type="text" class="table-input time-input end-input" value="${seg.end}"></td>
+                    <td><input type="text" class="table-input title-input" value="${seg.title}"></td>
+                    <td><input type="text" class="table-input time-input duration-input" value="${seg.duration}"></td>
+                    <td><input type="color" class="table-input color-input" value="${seg.color || '#0a0a0a'}"></td>
+                    <td>
+                        <div class="row-controls">
+                            <button class="drag-handle" title="Drag to reorder">≡</button>
+                            <button class="delete-btn" title="Delete row">✕</button>
+                        </div>
+                    </td>
+                `;
+                els.tbody.appendChild(tr);
+            });
+            attachTableListeners();
+        }
+
+        function broadcastState() {
+            saveStateToStorage();
+            syncChannel.postMessage({
+                type: 'STATE_UPDATE',
+                payload: AppState
+            });
+        }
+
+        function handleDataChange(index, field, value) {
+            const seg = AppState.segments[index];
+            seg[field] = value;
+
+            // Auto-calculate logic with cascading
+            if (field === 'start') {
+                seg.end = secondsToTime(timeToSeconds(seg.start) + timeToSeconds(seg.duration));
+                cascadeTimes(index + 1);
+            } else if (field === 'duration') {
+                seg.end = secondsToTime(timeToSeconds(seg.start) + timeToSeconds(seg.duration));
+                cascadeTimes(index + 1);
+            } else if (field === 'end') {
+                let endSecs = timeToSeconds(seg.end);
+                let startSecs = timeToSeconds(seg.start);
+                if (endSecs < startSecs) endSecs += 86400; // Cross-midnight adjustment
+                seg.duration = secondsToTime(endSecs - startSecs);
+                cascadeTimes(index + 1);
+            }
+            
+            // We do not re-render full table on color change so the input doesn't lose focus while dragging picker
+            if (field !== 'color') {
+                renderTable();
+            }
+            
+            broadcastState();
+        }
+
+        function attachTableListeners() {
+            // Input changes
+            els.tbody.querySelectorAll('tr').forEach((tr, index) => {
+                const startIn = tr.querySelector('.start-input');
+                const endIn = tr.querySelector('.end-input');
+                const titleIn = tr.querySelector('.title-input');
+                const durIn = tr.querySelector('.duration-input');
+                const colorIn = tr.querySelector('.color-input');
+
+                startIn.addEventListener('change', (e) => handleDataChange(index, 'start', e.target.value));
+                endIn.addEventListener('change', (e) => handleDataChange(index, 'end', e.target.value));
+                titleIn.addEventListener('change', (e) => handleDataChange(index, 'title', e.target.value));
+                durIn.addEventListener('change', (e) => handleDataChange(index, 'duration', e.target.value));
+                colorIn.addEventListener('input', (e) => handleDataChange(index, 'color', e.target.value));
+
+                // Delete
+                tr.querySelector('.delete-btn').addEventListener('click', () => {
+                    AppState.segments.splice(index, 1);
+                    renderTable();
+                    broadcastState();
+                });
+            });
+
+            // Drag and Drop implementation
+            let draggedRow = null;
+            els.tbody.addEventListener('dragstart', (e) => {
+                if(e.target.tagName === 'TR') {
+                    draggedRow = e.target;
+                    e.target.classList.add('dragging');
+                }
+            });
+            
+            els.tbody.addEventListener('dragend', (e) => {
+                if(e.target.tagName === 'TR') {
+                    e.target.classList.remove('dragging');
+                    // Rebuild array based on DOM order
+                    const newSegments = [];
+                    els.tbody.querySelectorAll('tr').forEach(tr => {
+                        const oldIdx = tr.dataset.index;
+                        newSegments.push(AppState.segments[oldIdx]);
+                    });
+                    AppState.segments = newSegments;
+                    
+                    cascadeTimes(1); // Recalculate sequentially
+                    
+                    renderTable();
+                    broadcastState();
+                }
+            });
+
+            els.tbody.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const targetRow = e.target.closest('tr');
+                if (targetRow && targetRow !== draggedRow) {
+                    const rect = targetRow.getBoundingClientRect();
+                    const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+                    els.tbody.insertBefore(draggedRow, next ? targetRow.nextSibling : targetRow);
+                }
+            });
+        }
+
+        function setupProgramControls() {
+            // Add Row
+            els.btnAddRow.addEventListener('click', () => {
+                let lastEnd = "12:00:00";
+                if (AppState.segments.length > 0) {
+                    lastEnd = AppState.segments[AppState.segments.length - 1].end;
+                }
+                const newDur = "01:00:00";
+                AppState.segments.push({
+                    id: Date.now().toString(),
+                    start: lastEnd,
+                    end: secondsToTime(timeToSeconds(lastEnd) + timeToSeconds(newDur)),
+                    title: 'Segment #1',
+                    duration: newDur,
+                    color: '#000000'
+                });
+                renderTable();
+                broadcastState();
+            });
+
+            // Quick Next Logic: End current segment now, pull next segment start to now.
+            els.btnQuickNext.addEventListener('click', () => {
+                const nowSecs = getCurrentSeconds();
+                let currentIndex = AppState.segments.findIndex(s => {
+                    const sSec = timeToSeconds(s.start);
+                    let eSec = timeToSeconds(s.end);
+                    if (eSec <= sSec) eSec += 86400;
+                    let nSec = nowSecs;
+                    if (eSec > 86400 && nSec < (eSec - 86400)) nSec += 86400;
+                    return sSec <= nSec && eSec > nSec;
+                });
+                
+                if (currentIndex !== -1 && currentIndex < AppState.segments.length - 1) {
+                    // Truncate current based on time
+                    AppState.segments[currentIndex].end = secondsToTime(nowSecs);
+                    
+                    let sSec = timeToSeconds(AppState.segments[currentIndex].start);
+                    let nSec = nowSecs;
+                    if (nSec < sSec) nSec += 86400; // Cross-midnight edge case
+                    AppState.segments[currentIndex].duration = secondsToTime(nSec - sSec);
+                    
+                    // Cascade updates everything after
+                    cascadeTimes(currentIndex + 1);
+                    renderTable();
+                    broadcastState();
+                } else if (currentIndex === -1 && AppState.segments.length > 0) {
+                    // If before the first segment, snap the first one to NOW
+                    const firstStart = timeToSeconds(AppState.segments[0].start);
+                    if (nowSecs < firstStart) {
+                        AppState.segments[0].start = secondsToTime(nowSecs);
+                        AppState.segments[0].end = secondsToTime(nowSecs + timeToSeconds(AppState.segments[0].duration));
+                        cascadeTimes(1);
+                        renderTable();
+                        broadcastState();
+                    }
+                }
+            });
+
+            // Message Toggle
+            els.btnShowMsg.addEventListener('click', () => {
+                AppState.showMessage = !AppState.showMessage;
+                AppState.message = els.msgInput.value;
+                
+                if (AppState.showMessage) {
+                    els.btnShowMsg.textContent = "HIDE";
+                    els.btnShowMsg.classList.add('active');
+                } else {
+                    els.btnShowMsg.textContent = "SHOW";
+                    els.btnShowMsg.classList.remove('active');
+                }
+                broadcastState();
+            });
+
+            // Color Presets Selection
+            els.colorPresets.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    els.colorPresets.forEach(b => b.classList.remove('active'));
+                    const target = e.currentTarget;
+                    target.classList.add('active');
+                    
+                    AppState.messageBg = target.dataset.bg;
+                    AppState.messageColor = target.dataset.color;
+                    
+                    // Live update if message is currently shown
+                    if (AppState.showMessage) broadcastState();
+                });
+            });
+
+            // Message Input Realtime Sync (Optional, but good if SHOW is active)
+            els.msgInput.addEventListener('input', () => {
+                AppState.message = els.msgInput.value;
+                if (AppState.showMessage) broadcastState();
+            });
+
+            // File IO
+            els.btnExport.addEventListener('click', () => {
+                const lines = AppState.segments.map(s => `${s.start} | ${s.end} | ${s.title} | ${s.duration} | ${s.color || '#0a0a0a'}`);
+                const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `runUp_${new Date().toISOString().slice(0,10)}.run`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            els.btnLoad.addEventListener('click', () => els.fileInput.click());
+            
+            els.fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const text = ev.target.result;
+                    const lines = text.split('\n').filter(l => l.trim().length > 0);
+                    const newSegments = [];
+                    lines.forEach(line => {
+                        const parts = line.split('|').map(p => p.trim());
+                        if (parts.length >= 4) {
+                            newSegments.push({ 
+                                id: Date.now()+Math.random(), 
+                                start: parts[0], 
+                                end: parts[1], 
+                                title: parts[2], 
+                                duration: parts[3],
+                                color: parts[4] || '#0a0a0a' // Fallback for files saved prior to color update
+                            });
+                        }
+                    });
+                    if(newSegments.length > 0) {
+                        AppState.segments = newSegments;
+                        cascadeTimes(1); // Enforce contiguity on load
+                        renderTable();
+                        broadcastState();
+                    }
+                };
+                reader.readAsText(file);
+                els.fileInput.value = ''; // reset
+            });
+
+            // Present Button (Open Popup)
+            els.btnPresent.addEventListener('click', () => {
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('view', 'live');
+                // Open new window. Browsers usually allow this on user interaction.
+                window.open(currentUrl.href, 'RunUpLiveWindow', 'width=1280,height=720,menubar=no,toolbar=no,location=no,status=no');
+                
+                // Ensure current state is broadcasted slightly after open to sync
+                setTimeout(broadcastState, 1000); 
+            });
+        }
+
+        // --- KEYBOARD SHORTCUTS ---
+        window.addEventListener('keydown', (e) => {
+            // Check if window is active
+            if (!document.hasFocus()) return;
+            // Check if user is typing in an input field
+            const activeTag = document.activeElement ? document.activeElement.tagName : '';
+            if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
+
+            switch (e.key.toLowerCase()) {
+                case 'q':
+                    e.preventDefault();
+                    if (isLiveView) {
+                        syncChannel.postMessage({ type: 'COMMAND_QUICK_NEXT' });
+                    } else {
+                        els.btnQuickNext.click();
+                    }
+                    break;
+                case 'p':
+                    e.preventDefault();
+                    if (!isLiveView) els.btnPresent.click();
+                    break;
+                case '1':
+                    e.preventDefault();
+                    if (isLiveView) {
+                        syncChannel.postMessage({ type: 'COMMAND_TOGGLE_MSG' });
+                    } else {
+                        els.btnShowMsg.click();
+                    }
+                    break;
+            }
+        });
+
+        // --- LIVE VIEW LOGIC (Receiver) ---
+        
+        function updateLiveUIFromState(state) {
+            AppState.segments = state.segments;
+            
+            if (state.showMessage && state.message.trim() !== '') {
+                els.lMsgContainer.classList.add('msg-visible');
+                
+                // Apply color states
+                els.lMsgContainer.style.backgroundColor = state.messageBg || '#b10000';
+                els.lMsgContainer.style.color = state.messageColor || '#ffffff';
+
+                // Only parse/update if changed to avoid breaking marquee mid-scroll
+                if (els.lMarquee.dataset.raw !== state.message) {
+                    els.lMarquee.dataset.raw = state.message;
+                    els.lMarquee.innerHTML = parseMarkdown(state.message);
+                    
+                    // Reset animation states to measure width
+                    els.lMarquee.className = 'marquee-content static-measure';
+                    els.lMarquee.style.animation = 'none';
+                    
+                    // Measure and apply proper class next frame
+                    requestAnimationFrame(() => {
+                        const containerWidth = els.lMsgContainer.clientWidth;
+                        const textWidth = els.lMarquee.scrollWidth;
+                        
+                        if (textWidth > containerWidth) {
+                            els.lMarquee.className = 'marquee-content marquee-active';
+                            els.lMarquee.style.animation = ''; // Restore CSS animation
+                        } else {
+                            els.lMarquee.className = 'marquee-content marquee-static';
+                        }
+                    });
+                }
+            } else {
+                els.lMsgContainer.classList.remove('msg-visible');
+            }
+        }
+
+        // --- INITIALIZATION ---
+        
+        function initApp() {
+            if (isLiveView) {
+                // Setup Live View
+                document.title = "RunUp - LIVE";
+                els.progView.classList.add('hidden');
+                els.liveView.classList.remove('hidden');
+                els.liveView.style.display = 'flex'; // override default
+                
+                // Listen for sync
+                syncChannel.onmessage = (event) => {
+                    if (event.data.type === 'STATE_UPDATE') {
+                        updateLiveUIFromState(event.data.payload);
+                    }
+                };
+                
+                // Request initial state (Optional: assumes Program view is open and will broadcast on load)
+                syncChannel.postMessage({ type: 'REQUEST_STATE' });
+                
+            } else {
+                // Setup Program View
+                loadStateFromStorage();
+                
+                // Init message box state
+                els.msgInput.value = AppState.message;
+                if (AppState.showMessage) {
+                    els.btnShowMsg.textContent = "HIDE";
+                    els.btnShowMsg.classList.add('active');
+                }
+
+                // Init color presets state
+                let hasActiveColor = false;
+                els.colorPresets.forEach(btn => {
+                    if (btn.dataset.bg === AppState.messageBg) {
+                        btn.classList.add('active');
+                        hasActiveColor = true;
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                // Fallback if no matching preset
+                if (!hasActiveColor && els.colorPresets.length > 0) {
+                    els.colorPresets[0].classList.add('active');
+                    AppState.messageBg = els.colorPresets[0].dataset.bg;
+                    AppState.messageColor = els.colorPresets[0].dataset.color;
+                }
+
+                renderTable();
+                setupProgramControls();
+                
+                // Listen for requests from newly opened live windows
+                syncChannel.onmessage = (event) => {
+                    if (event.data.type === 'REQUEST_STATE') {
+                        broadcastState();
+                    } else if (event.data.type === 'COMMAND_QUICK_NEXT') {
+                        els.btnQuickNext.click();
+                    } else if (event.data.type === 'COMMAND_TOGGLE_MSG') {
+                        els.btnShowMsg.click();
+                    }
+                };
+                
+                // Initial broadcast
+                broadcastState();
+            }
+
+            // Start clock engine
+            requestAnimationFrame(updateClockLoop);
+        }
+
+        // Boot
+        initApp();
+
+    </script>
+</body>
+</html>

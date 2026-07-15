@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!---
    
-   RunUp • An intuitive countdown and segment timer for live events
+   RunDown • An intuitive countdown and segment timer for live events
    Initial: v2026.07.14
    Codecrafted by hello@stefanushosea.com
 
@@ -10,28 +10,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RunUp</title>
-    <meta property="og:title" content="RunUp"/>
+    <title>RunDown</title>
+    <meta property="og:title" content="RunDown"/>
     <meta name="description" content="An intuitive countdown and segment timer for live events • Codecrafted by stefanus@hosea.id">
     <meta property="og:description" content="An intuitive countdown and segment timer for live events • Codecrafted by stefanus@hosea.id">
     <meta property="og:type" content="website"/>
-    <meta property="og:url" content="https://runUp.hosea.id"/>
-    <meta property="og:image" content="https://runUp.hosea.id/share.jpg"/>
+    <meta property="og:url" content="https://rundown.hosea.id"/>
+    <meta property="og:image" content="https://rundown.hosea.id/share.jpg"/>
     <meta property="og:image:type" content="image/jpeg"/>
     <meta property="og:image:width" content="1200"/>
     <meta property="og:image:height" content="630"/>
     <meta name="author" content="Stefanus Hosea"/>
-    <meta name="keywords" content="runup, run, time, countdown, clock, timer, presenter, presentation"/>
-    <meta property="og:site_name" content="RunUp"/>
+    <meta name="keywords" content="rundown, run, time, countdown, clock, timer, presenter, presentation"/>
+    <meta property="og:site_name" content="RunDown"/>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="RunUp"/>
-    <meta name="application-name" content="RunUp"/>
-    <link rel="apple-touch-icon" href="https://runUp.hosea.id/apple-touch-icon.png"/>
+    <meta name="apple-mobile-web-app-title" content="RunDown"/>
+    <meta name="application-name" content="RunDown"/>
+    <link rel="apple-touch-icon" href="https://rundown.hosea.id/apple-touch-icon.png"/>
     <meta name="theme-color" content="#242424"/>
     <meta name="msapplication-navbutton-color" content="#242424"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="manifest" href="https://rundown.hosea.id/site.webmanifest" >
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;1,200;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
@@ -120,12 +121,16 @@
             border-color: var(--bg-dark);
         }
 
-        .pill-btn.small { padding: 4px 12px; font-size: 14px; border-radius: 4px;}
+        .pill-btn.small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
 
         /* --- VIEWS --- */
         .view-container {
             width: 100vw;
-            height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
         }
@@ -170,7 +175,7 @@
             opacity: .6;
         }
         .prog-header .credit {
-            font-size: 10px;
+            font-size: 8px;
             opacity: .25;
             transition: opacity .5s ease;
         }
@@ -203,7 +208,7 @@
             font-size: clamp(20px, 5vw, 45px);
             font-weight: 600;
             line-height: 1.1;
-            margin-bottom: .5vh;
+            margin-bottom: .5dvh;
             min-height: 1.2em;
             padding: 0 2.5vw;
         }
@@ -279,6 +284,12 @@
             padding: 4px;
         }
 
+        tr:first-child td { padding-top: 0; }
+        tr:last-child td { padding-bottom: 0; }
+        tr td:first-child { padding-left: 0; }
+        tr td:last-child { padding-right: 0; }
+        th:first-child { padding-left: 0; }
+
         .table-input {
             width: 100%;
             padding: 8px;
@@ -291,6 +302,30 @@
         
         .table-input.time-input { text-align: center; min-width: 90px; }
         .table-input.color-input { padding: 0; width: 32px; height: 32px; cursor: pointer; border: none; background: none; }
+        .duration-input::-webkit-calendar-picker-indicator {
+            display: none;
+        }
+
+        #editor-container {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #raw-editor {
+            width: 100%;
+            flex: 1;
+            font-family: var(--font-main);
+            font-size: 14px;
+            min-height: 150px;
+            padding: 12px;
+            font-size: 14px;
+            background-color: var(--input-bg);
+            color: #000000;
+            border: 1px solid rgba(128,128,128,0.3);
+            resize: vertical;
+        }
 
         .row-controls {
             display: flex;
@@ -406,12 +441,12 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding-top: 5vh;
+            padding-top: 5dvh;
             background-image: linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,0) 50%);
         }
 
-        #live-view .segment-title { font-size: 4vw; margin-bottom: 1vh; }
-        #live-view .live-clock { font-size: 15vw; margin-bottom: 1vh; }
+        #live-view .segment-title { font-size: 4vw; margin-bottom: 1dvh; }
+        #live-view .live-clock { font-size: 15vw; margin-bottom: 1dvh; }
         #live-view .countdown { font-size: 5vw; }
 
         .live-message-banner {
@@ -430,13 +465,13 @@
         }
 
         .live-message-banner.msg-visible {
-            max-height: 10vh; /* Enough to display content */
+            max-height: 10dvh; /* Enough to display content */
             opacity: 1;
         }
 
         .marquee-content {
             display: inline-block;
-            padding: 1.5vh 0; /* Padding moved inside for smooth collapse */
+            padding: 1.5dvh 0; /* Padding moved inside for smooth collapse */
         }
 
         .static-measure {
@@ -465,10 +500,10 @@
         .live-footer {
             background-image: linear-gradient(#fff, rgba(255, 255, 255, .75)); 
             color: var(--text-dark);
-            padding: 2vh 4vw;
+            padding: 2dvh 4vw;
             display: flex;
             flex-direction: column;
-            height: 12.5vh;
+            height: 12.5dvh;
             justify-content: center;
         }
 
@@ -520,8 +555,8 @@
         .readonly-input:focus { outline: none; }
 
         /* --- RESPONSIVENESS --- */
-        @media (max-width: 768px) {
-            .prog-display-area { padding: 15px 20px; flex: 0 0 auto; min-height: 45vh; }
+        @media (max-width: 865px) {
+            .prog-display-area { padding: 15px 20px; flex: 0 0 auto; min-height: 45dvh; }
             .prog-control-area { padding: 25px 20px; flex-direction: column; gap: 25px; }
             .prog-header { margin-bottom: 20px; }
             .prog-display-controls { margin-top: 20px; gap: 10px; }
@@ -542,7 +577,7 @@
         <!-- Top Half (Black) -->
         <div id="prog-display-area" class="prog-display-area">
             <div class="prog-header">
-                <div class="logo">Run<strong>Up</strong><span class="version">v2026.07.14.2240</span></div>
+                <div class="logo">Run<strong>Down</strong><span class="version">v2026.07.14.2240</span></div>
                 <div class="credit">Codecrafted by <a href="https://stefanus.hosea.id" target="_blank"><strong>Stefanus Hosea</strong></a></div>
             </div>
             
@@ -568,7 +603,7 @@
                             <tr>
                                 <th style="width: 15%;">START</th>
                                 <th style="width: 15%;">END</th>
-                                <th style="width: 45%;">TITLE</th>
+                                <th style="width: 45%;">SEGMENT</th>
                                 <th style="width: 15%;">DURATION</th>
                                 <th style="width: 5%;">COLOR</th>
                                 <th style="width: 5%;"></th>
@@ -579,26 +614,35 @@
                         </tbody>
                     </table>
                 </div>
+                
+                <div id="editor-container" class="hidden">
+                    <div class="section-label">EDITOR MODE</div>
+                    <textarea id="raw-editor" spellcheck="false" placeholder="Start | End | Segment | Duration | Color Hex&#10;12:00:00 | 13:00:00 | Opening Segment | 01:00:00 | #000000"></textarea>
+                </div>
+                
                 <div class="bottom-actions">
                     <div class="file-actions">
                         <button id="btn-load" class="pill-btn outline">LOAD</button>
                         <button id="btn-export" class="pill-btn outline">EXPORT</button>
                         <input type="file" id="file-input" accept=".run" class="hidden">
                     </div>
-                    <button id="btn-add-row" class="pill-btn outline small">+ ADD</button>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="btn-editor-mode" class="pill-btn outline small">EDITOR</button>
+                        <button id="btn-add-row" class="pill-btn outline small">+ ADD</button>
+                    </div>
                 </div>
             </div>
 
             <!-- Right: Message -->
             <div class="message-section">
                 <div class="section-label">MESSAGE</div>
-                <textarea id="message-input" placeholder="Message Text Input with **Markdown Formatting**"></textarea>
+                <textarea id="message-input" placeholder="Display a message with **markdown** _formatting_"></textarea>
                 <div class="msg-btn-container">
                     <div class="msg-color-presets" id="msg-color-presets">
-                        <button class="color-preset-btn" data-bg="#b10000" data-color="#ffffff" style="background-color: #b10000;" title="Red"></button>
-                        <button class="color-preset-btn" data-bg="#fdee00" data-color="#000000" style="background-color: #fdee00;" title="Yellow"></button>
                         <button class="color-preset-btn" data-bg="#ffffff" data-color="#000000" style="background-color: #ffffff;" title="White"></button>
                         <button class="color-preset-btn" data-bg="#000000" data-color="#ffffff" style="background-color: #000000;" title="Black"></button>
+                        <button class="color-preset-btn" data-bg="#b10000" data-color="#ffffff" style="background-color: #b10000;" title="Red"></button>
+                        <button class="color-preset-btn" data-bg="#fdee00" data-color="#000000" style="background-color: #fdee00;" title="Yellow"></button>
                     </div>
                     <button id="btn-show-msg" class="pill-btn filled">SHOW</button>
                 </div>
@@ -638,8 +682,8 @@
             segments: [],
             message: '',
             showMessage: false,
-            messageBg: '#b10000',
-            messageColor: '#ffffff'
+            messageBg: '#ffffff',
+            messageColor: '#000000'
         };
 
         const STORAGE_KEY = 'runup_app_state';
@@ -657,8 +701,8 @@
                     AppState.segments = parsed.segments || parsed.schedules || [];
                     AppState.message = parsed.message || '';
                     AppState.showMessage = parsed.showMessage || false;
-                    AppState.messageBg = parsed.messageBg || '#b10000';
-                    AppState.messageColor = parsed.messageColor || '#ffffff';
+                    AppState.messageBg = parsed.messageBg || '#ffffff';
+                    AppState.messageColor = parsed.messageColor || '#000000';
                 } catch(e) {}
             }
         }
@@ -781,6 +825,10 @@
             btnPresent: document.getElementById('btn-present'),
             btnQuickNext: document.getElementById('btn-quick-next'),
             btnAddRow: document.getElementById('btn-add-row'),
+            btnEditorMode: document.getElementById('btn-editor-mode'),
+            editorContainer: document.getElementById('editor-container'),
+            rawEditor: document.getElementById('raw-editor'),
+            tableResponsive: document.querySelector('.table-responsive'),
             btnLoad: document.getElementById('btn-load'),
             btnExport: document.getElementById('btn-export'),
             fileInput: document.getElementById('file-input')
@@ -794,7 +842,7 @@
             const nowTimeStr = secondsToTime(nowSecs);
             
             // Update document window title with live clock
-            document.title = nowTimeStr + (isLiveView ? "" : " • RunUp");
+            document.title = nowTimeStr + (isLiveView ? "" : " • RunDown");
             
             // Update physical clocks with fading transition
             if (isLiveView) updateFadingDigits(els.lClock, nowTimeStr);
@@ -910,10 +958,10 @@
                 const roClass = index > 0 ? 'readonly-input' : '';
 
                 tr.innerHTML = `
-                    <td><input type="text" class="table-input time-input start-input ${roClass}" value="${seg.start}" ${isReadonly} title="${index > 0 ? 'Auto-calculated sequence' : ''}"></td>
-                    <td><input type="text" class="table-input time-input end-input" value="${seg.end}"></td>
+                    <td><input type="time" step="1" lang="en-GB" class="table-input time-input start-input ${roClass}" value="${seg.start}" ${isReadonly} title="${index > 0 ? 'Auto-calculated sequence' : ''}"></td>
+                    <td><input type="time" step="1" lang="en-GB" class="table-input time-input end-input" value="${seg.end}"></td>
                     <td><input type="text" class="table-input title-input" value="${seg.title}"></td>
-                    <td><input type="text" class="table-input time-input duration-input" value="${seg.duration}"></td>
+                    <td><input type="time" step="1" lang="en-GB" class="table-input time-input duration-input" value="${seg.duration}"></td>
                     <td><input type="color" class="table-input color-input" value="${seg.color || '#0a0a0a'}"></td>
                     <td>
                         <div class="row-controls">
@@ -924,6 +972,14 @@
                 `;
                 els.tbody.appendChild(tr);
             });
+            
+            // Hide export button if no segments
+            if (AppState.segments.length === 0) {
+                els.btnExport.classList.add('hidden');
+            } else {
+                els.btnExport.classList.remove('hidden');
+            }
+            
             attachTableListeners();
         }
 
@@ -1106,6 +1162,11 @@
                     AppState.messageBg = target.dataset.bg;
                     AppState.messageColor = target.dataset.color;
                     
+                    if (!isLiveView) {
+                        els.msgInput.style.backgroundColor = AppState.messageBg;
+                        els.msgInput.style.color = AppState.messageColor;
+                    }
+                    
                     // Live update if message is currently shown
                     if (AppState.showMessage) broadcastState();
                 });
@@ -1116,15 +1177,65 @@
                 AppState.message = els.msgInput.value;
                 if (AppState.showMessage) broadcastState();
             });
+            
+            // Editor Mode Logic
+            let isEditorMode = false;
+            els.btnEditorMode.addEventListener('click', () => {
+                isEditorMode = !isEditorMode;
+                const headerLine = "Start | End | Segment | Duration | Color Hex";
+                
+                if (isEditorMode) {
+                    const lines = [headerLine, ...AppState.segments.map(s => `${s.start} | ${s.end} | ${s.title} | ${s.duration} | ${s.color || '#0a0a0a'}`)];
+                    els.rawEditor.value = lines.join('\n');
+                    els.tableResponsive.classList.add('hidden');
+                    els.editorContainer.classList.remove('hidden');
+                    els.btnEditorMode.textContent = "SAVE & CLOSE";
+                    els.btnEditorMode.classList.add('filled', 'active');
+                    els.btnEditorMode.classList.remove('outline');
+                    els.btnAddRow.classList.add('hidden');
+                } else {
+                    const text = els.rawEditor.value;
+                    const lines = text.split('\n').filter(l => l.trim().length > 0);
+                    const newSegments = [];
+                    lines.forEach(line => {
+                        // Skip the header line on parsing
+                        if (line.toLowerCase().includes('start |') && line.toLowerCase().includes('end |')) return; 
+                        
+                        const parts = line.split('|').map(p => p.trim());
+                        if (parts.length >= 4) {
+                            newSegments.push({ 
+                                id: Date.now()+Math.random(), 
+                                start: parts[0], 
+                                end: parts[1], 
+                                title: parts[2], 
+                                duration: parts[3],
+                                color: parts[4] || '#0a0a0a'
+                            });
+                        }
+                    });
+                    AppState.segments = newSegments;
+                    cascadeTimes(1);
+                    renderTable();
+                    broadcastState();
+                    
+                    els.tableResponsive.classList.remove('hidden');
+                    els.editorContainer.classList.add('hidden');
+                    els.btnEditorMode.textContent = "EDITOR";
+                    els.btnEditorMode.classList.remove('filled', 'active');
+                    els.btnEditorMode.classList.add('outline');
+                    els.btnAddRow.classList.remove('hidden');
+                }
+            });
 
             // File IO
             els.btnExport.addEventListener('click', () => {
-                const lines = AppState.segments.map(s => `${s.start} | ${s.end} | ${s.title} | ${s.duration} | ${s.color || '#0a0a0a'}`);
+                const headerLine = "Start | End | Segment | Duration | Color Hex";
+                const lines = [headerLine, ...AppState.segments.map(s => `${s.start} | ${s.end} | ${s.title} | ${s.duration} | ${s.color || '#0a0a0a'}`)];
                 const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `runUp_${new Date().toISOString().slice(0,10)}.run`;
+                a.download = `rundown_${new Date().toISOString().slice(0,10)}.run`;
                 a.click();
                 URL.revokeObjectURL(url);
             });
@@ -1140,6 +1251,9 @@
                     const lines = text.split('\n').filter(l => l.trim().length > 0);
                     const newSegments = [];
                     lines.forEach(line => {
+                        // Skip the header line on parsing
+                        if (line.toLowerCase().includes('start |') && line.toLowerCase().includes('end |')) return; 
+
                         const parts = line.split('|').map(p => p.trim());
                         if (parts.length >= 4) {
                             newSegments.push({ 
@@ -1168,7 +1282,7 @@
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.set('view', 'live');
                 // Open new window. Browsers usually allow this on user interaction.
-                window.open(currentUrl.href, 'RunUpLiveWindow', 'width=1280,height=720,menubar=no,toolbar=no,location=no,status=no');
+                window.open(currentUrl.href, 'RunDownLiveWindow', 'width=1280,height=720,menubar=no,toolbar=no,location=no,status=no');
                 
                 // Ensure current state is broadcasted slightly after open to sync
                 setTimeout(broadcastState, 1000); 
@@ -1251,7 +1365,7 @@
         function initApp() {
             if (isLiveView) {
                 // Setup Live View
-                document.title = "RunUp - LIVE";
+                document.title = "RunDown - LIVE";
                 els.progView.classList.add('hidden');
                 els.liveView.classList.remove('hidden');
                 els.liveView.style.display = 'flex'; // override default
@@ -1287,12 +1401,17 @@
                         btn.classList.remove('active');
                     }
                 });
-                // Fallback if no matching preset
+                // Fallback if no matching preset (Defaults to White)
                 if (!hasActiveColor && els.colorPresets.length > 0) {
-                    els.colorPresets[0].classList.add('active');
-                    AppState.messageBg = els.colorPresets[0].dataset.bg;
-                    AppState.messageColor = els.colorPresets[0].dataset.color;
+                    const whiteBtn = Array.from(els.colorPresets).find(b => b.dataset.bg === '#ffffff') || els.colorPresets[0];
+                    whiteBtn.classList.add('active');
+                    AppState.messageBg = whiteBtn.dataset.bg;
+                    AppState.messageColor = whiteBtn.dataset.color;
                 }
+                
+                // Apply color to message input
+                els.msgInput.style.backgroundColor = AppState.messageBg;
+                els.msgInput.style.color = AppState.messageColor;
 
                 renderTable();
                 setupProgramControls();
@@ -1318,7 +1437,6 @@
 
         // Boot
         initApp();
-
     </script>
 </body>
 </html>

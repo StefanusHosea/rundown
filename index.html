@@ -811,28 +811,46 @@
             sendCmdP2P = cmdSync[0];
             const getCmdP2P = cmdSync[1];
             
-            p2pRoom.onPeerJoin(peerId => {
-                if (!isLiveView) {
-                    // Host automatically pushes current state to any new peer that joins
-                    sendStateP2P(AppState, peerId);
-                } else {
-                    // Just in case, the viewer can request state upon connection
-                    sendCmdP2P({ type: 'REQUEST_STATE' }, peerId);
-                }
-            });
-            
-            if (isLiveView) {
-                // Viewer mode: Receive state updates from Host
-                getStateP2P(data => {
-                    updateLiveUIFromState(data);
-                });
-            } else {
-                // Host mode: Receive commands from Viewers (like pressing Q or 1)
+            // --- HOST LOGIC ---
+            if (!isLiveView) {
+                // When a viewer explicitly asks for state or sends a command
                 getCmdP2P((data, peerId) => {
                     if (data.type === 'COMMAND_QUICK_NEXT') els.btnQuickNext.click();
                     else if (data.type === 'COMMAND_TOGGLE_MSG') els.btnShowMsg.click();
-                    else if (data.type === 'REQUEST_STATE') sendStateP2P(AppState, peerId);
+                    else if (data.type === 'REQUEST_STATE') {
+                        // Send state back to the specific peer who asked
+                        sendStateP2P(AppState, peerId);
+                    }
                 });
+                
+                // Backup: Try sending state automatically when a peer joins
+                p2pRoom.onPeerJoin(peerId => {
+                    sendStateP2P(AppState, peerId);
+                });
+            } 
+            
+            // --- VIEWER LOGIC ---
+            else {
+                // Listen for state updates from Host
+                let receivedState = false;
+                getStateP2P(data => {
+                    receivedState = true;
+                    updateLiveUIFromState(data);
+                });
+                
+                // When joining, proactively request state from peers
+                p2pRoom.onPeerJoin(peerId => {
+                    sendCmdP2P({ type: 'REQUEST_STATE' }, peerId);
+                });
+
+                // Polling fallback to guarantee state payload gets received
+                const requestInterval = setInterval(() => {
+                    if (!receivedState && p2pRoom.getPeers().length > 0) {
+                         sendCmdP2P({ type: 'REQUEST_STATE' });
+                    } else if (receivedState) {
+                        clearInterval(requestInterval);
+                    }
+                }, 2000);
             }
         }
 

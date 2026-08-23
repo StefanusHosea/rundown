@@ -37,7 +37,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;1,200;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
     
     <!-- Load Trystero for Serverless P2P syncing -->
-    <script src="https://cdn.jsdelivr.net/npm/trystero@0.20.1/dist/trystero-torrent.min.js"></script>
+    <script type="module">
+        import { joinRoom } from 'https://cdn.jsdelivr.net/npm/@trystero-p2p/torrent@0.25.3/+esm';
+        window.trystero = { joinRoom };
+    </script>
     
     <style>
         :root {
@@ -477,6 +480,17 @@
             outline: none;
         }
 
+        .share-control-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+            font-size: 13px;
+            color: #ccc;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+
         .modal-actions {
             display: flex;
             justify-content: center;
@@ -737,9 +751,14 @@
         <div class="modal-content">
             <div class="modal-title">Share Live View</div>
             <div class="modal-desc">Share this link to instantly broadcast your timer to another device via P2P. No accounts required.</div>
+            <label class="share-control-toggle">
+                <input type="checkbox" id="share-control-checkbox">
+                Allow this link to control playback (Quick Next, Message)
+            </label>
             <div class="share-url-container">
                 <input type="text" id="share-url-input" readonly>
             </div>
+            <div id="share-status" class="modal-desc">Waiting for a viewer to connect…</div>
             <div class="modal-actions">
                 <button id="btn-copy-url" class="pill-btn outline">COPY</button>
                 <button id="btn-close-modal" class="pill-btn outline">CLOSE</button>
@@ -793,9 +812,28 @@
 
         // --- P2P SERVERLESS SYNC (TRYSTERO) ---
         const P2P_CONFIG = { appId: 'rundown-timer-v1' };
+        const CONTROL_TOKEN_KEY = 'runup_control_token';
         let p2pRoom = null;
         let sendStateP2P = null;
         let sendCmdP2P = null;
+        // Viewer: token read from a "control-enabled" share link (null on a plain view-only link).
+        // Host: overwritten in initP2P() with the real per-room secret peers must present to be obeyed.
+        let p2pControlToken = urlParams.get('ctrl');
+        const p2pPeers = new Set(); // host-side: peer IDs currently connected (drives the Share modal status line)
+
+        // Restore or mint the secret that gates control commands (Quick Next / Toggle Message) for a room.
+        // A view-only share link simply never receives this in its URL, so it can never present a valid token.
+        function ensureControlToken(roomId) {
+            try {
+                const saved = JSON.parse(localStorage.getItem(CONTROL_TOKEN_KEY) || 'null');
+                if (saved && saved.roomId === roomId && saved.token) return saved.token;
+            } catch(e) {}
+            const token = generateRoomId();
+            try {
+                localStorage.setItem(CONTROL_TOKEN_KEY, JSON.stringify({ roomId, token }));
+            } catch(e) {}
+            return token;
+        }
 
         function initP2P(roomId) {
             // Check if trystero is available (loaded via CDN)
@@ -819,23 +857,37 @@
             
             // --- HOST LOGIC ---
             if (!isLiveView) {
+                // Restore (or mint) the secret that gates Quick Next / Toggle Message from remote peers.
+                p2pControlToken = ensureControlToken(roomId);
+
                 // Listen for explicit commands or requests from viewers
                 getCmdP2P((data, peerId) => {
                     console.log("Host received command:", data);
-                    if (data.type === 'COMMAND_QUICK_NEXT') els.btnQuickNext.click();
-                    else if (data.type === 'COMMAND_TOGGLE_MSG') els.btnShowMsg.click();
+                    // A peer's command is only obeyed if it presents the current room's control token.
+                    // A view-only share link never contains that token, so it can only ever REQUEST_STATE.
+                    const isAuthorized = p2pControlToken && data.token === p2pControlToken;
+                    if (data.type === 'COMMAND_QUICK_NEXT') { if (isAuthorized) els.btnQuickNext.click(); }
+                    else if (data.type === 'COMMAND_TOGGLE_MSG') { if (isAuthorized) els.btnShowMsg.click(); }
                     else if (data.type === 'REQUEST_STATE') {
                         // Send state back specifically to the peer who asked
                         sendStateP2P(AppState, peerId);
                     }
                 });
-                
+
                 // Backup proactively push state when a peer joins
                 p2pRoom.onPeerJoin(peerId => {
                     console.log("Peer joined, proactively sending state to:", peerId);
+                    p2pPeers.add(peerId);
+                    updateShareStatus();
                     sendStateP2P(AppState, peerId);
                 });
-            } 
+
+                // Track disconnects too, so the Share modal status line stays accurate
+                p2pRoom.onPeerLeave(peerId => {
+                    p2pPeers.delete(peerId);
+                    updateShareStatus();
+                });
+            }
             
             // --- VIEWER LOGIC ---
             else {
@@ -856,7 +908,7 @@
                 // Polling fallback to guarantee state payload gets received
                 // If it doesn't receive state within 2 seconds of peers existing, ask again
                 const requestInterval = setInterval(() => {
-                    if (!receivedState && p2pRoom.getPeers().length > 0) {
+                    if (!receivedState && Object.keys(p2pRoom.getPeers()).length > 0) {
                          console.log("State not received yet, requesting again...");
                          sendCmdP2P({ type: 'REQUEST_STATE' });
                     } else if (receivedState) {
@@ -870,6 +922,14 @@
             if (p2pRoom && !isLiveView && sendStateP2P) {
                 sendStateP2P(AppState);
             }
+        }
+
+        // Reflects live P2P connection state in the Share modal
+        function updateShareStatus() {
+            const n = p2pPeers.size;
+            els.shareStatus.textContent = n === 0
+                ? 'Waiting for a viewer to connect…'
+                : (n === 1 ? '1 viewer connected' : `${n} viewers connected`);
         }
 
         // --- UTILS ---
@@ -1002,6 +1062,8 @@
             shareUrlInput: document.getElementById('share-url-input'),
             btnCopyUrl: document.getElementById('btn-copy-url'),
             btnCloseModal: document.getElementById('btn-close-modal'),
+            shareControlCheckbox: document.getElementById('share-control-checkbox'),
+            shareStatus: document.getElementById('share-status'),
         };
 
         let lastActiveSegmentId = null;
@@ -1483,9 +1545,27 @@
                     shareUrl = u.toString();
                 }
 
+                // Optionally append the control token so this link can also drive Quick Next / Toggle Message.
+                // Left unchecked, the link stays view-only since it never receives this secret.
+                if (els.shareControlCheckbox.checked && p2pControlToken) {
+                    shareUrl += (shareUrl.includes('?') ? '&' : '?') + 'ctrl=' + encodeURIComponent(p2pControlToken);
+                }
+
                 els.shareUrlInput.value = shareUrl;
                 els.btnCopyUrl.textContent = "COPY";
+                updateShareStatus();
                 els.shareModal.classList.add('active');
+            });
+
+            // Live-update the link when the control-access checkbox is toggled, without needing to re-click Share Link
+            els.shareControlCheckbox.addEventListener('change', () => {
+                const u = new URL(els.shareUrlInput.value);
+                if (els.shareControlCheckbox.checked && p2pControlToken) {
+                    u.searchParams.set('ctrl', p2pControlToken);
+                } else {
+                    u.searchParams.delete('ctrl');
+                }
+                els.shareUrlInput.value = u.toString();
             });
 
             els.btnCopyUrl.addEventListener('click', () => {
@@ -1524,7 +1604,7 @@
                     e.preventDefault();
                     if (isLiveView) {
                         syncChannel.postMessage({ type: 'COMMAND_QUICK_NEXT' });
-                        if(sendCmdP2P) sendCmdP2P({ type: 'COMMAND_QUICK_NEXT' });
+                        if(sendCmdP2P) sendCmdP2P({ type: 'COMMAND_QUICK_NEXT', token: p2pControlToken });
                     } else {
                         els.btnQuickNext.click();
                     }
@@ -1537,7 +1617,7 @@
                     e.preventDefault();
                     if (isLiveView) {
                         syncChannel.postMessage({ type: 'COMMAND_TOGGLE_MSG' });
-                        if(sendCmdP2P) sendCmdP2P({ type: 'COMMAND_TOGGLE_MSG' });
+                        if(sendCmdP2P) sendCmdP2P({ type: 'COMMAND_TOGGLE_MSG', token: p2pControlToken });
                     } else {
                         els.btnShowMsg.click();
                     }

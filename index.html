@@ -846,22 +846,22 @@
             console.log(`Initializing P2P Room: ${roomId}`);
             p2pRoom = trystero.joinRoom(P2P_CONFIG, roomId);
             
-            // makeAction returns an array: [send, get, onProgress]
+            // makeAction returns an action object: { send(data, [{target}]), onMessage, onReceiveProgress }
+            // (older Trystero returned a positional [send, get, onProgress] array - that shape no longer applies)
             const stateSync = p2pRoom.makeAction('stateSync');
-            sendStateP2P = stateSync[0];
-            const getStateP2P = stateSync[1];
+            sendStateP2P = (data, peerId) => stateSync.send(data, peerId ? { target: peerId } : undefined);
 
             const cmdSync = p2pRoom.makeAction('cmdSync');
-            sendCmdP2P = cmdSync[0];
-            const getCmdP2P = cmdSync[1];
-            
+            sendCmdP2P = (data, peerId) => cmdSync.send(data, peerId ? { target: peerId } : undefined);
+
             // --- HOST LOGIC ---
             if (!isLiveView) {
                 // Restore (or mint) the secret that gates Quick Next / Toggle Message from remote peers.
                 p2pControlToken = ensureControlToken(roomId);
 
                 // Listen for explicit commands or requests from viewers
-                getCmdP2P((data, peerId) => {
+                cmdSync.onMessage = (data, meta) => {
+                    const peerId = meta && meta.peerId;
                     console.log("Host received command:", data);
                     // A peer's command is only obeyed if it presents the current room's control token.
                     // A view-only share link never contains that token, so it can only ever REQUEST_STATE.
@@ -872,38 +872,38 @@
                         // Send state back specifically to the peer who asked
                         sendStateP2P(AppState, peerId);
                     }
-                });
+                };
 
                 // Backup proactively push state when a peer joins
-                p2pRoom.onPeerJoin(peerId => {
+                p2pRoom.onPeerJoin = peerId => {
                     console.log("Peer joined, proactively sending state to:", peerId);
                     p2pPeers.add(peerId);
                     updateShareStatus();
                     sendStateP2P(AppState, peerId);
-                });
+                };
 
                 // Track disconnects too, so the Share modal status line stays accurate
-                p2pRoom.onPeerLeave(peerId => {
+                p2pRoom.onPeerLeave = peerId => {
                     p2pPeers.delete(peerId);
                     updateShareStatus();
-                });
+                };
             }
-            
+
             // --- VIEWER LOGIC ---
             else {
                 // Listen for state updates from Host
                 let receivedState = false;
-                getStateP2P(data => {
+                stateSync.onMessage = data => {
                     console.log("Viewer received state update");
                     receivedState = true;
                     updateLiveUIFromState(data);
-                });
-                
+                };
+
                 // When joining, proactively request state from peers
-                p2pRoom.onPeerJoin(peerId => {
+                p2pRoom.onPeerJoin = peerId => {
                      console.log("Found peer, requesting state from:", peerId);
                      sendCmdP2P({ type: 'REQUEST_STATE' }, peerId);
-                });
+                };
 
                 // Polling fallback to guarantee state payload gets received
                 // If it doesn't receive state within 2 seconds of peers existing, ask again

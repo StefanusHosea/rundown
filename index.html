@@ -798,8 +798,14 @@
         let sendCmdP2P = null;
 
         function initP2P(roomId) {
-            if (!window.trystero) return console.warn("Trystero not loaded");
+            // Check if trystero is available (loaded via CDN)
+            if (!window.trystero) {
+                console.warn("Trystero not loaded. Retrying in 100ms...");
+                setTimeout(() => initP2P(roomId), 100);
+                return;
+            }
             
+            console.log(`Initializing P2P Room: ${roomId}`);
             p2pRoom = trystero.joinRoom(P2P_CONFIG, roomId);
             
             // makeAction returns an array: [send, get, onProgress]
@@ -813,18 +819,20 @@
             
             // --- HOST LOGIC ---
             if (!isLiveView) {
-                // When a viewer explicitly asks for state or sends a command
+                // Listen for explicit commands or requests from viewers
                 getCmdP2P((data, peerId) => {
+                    console.log("Host received command:", data);
                     if (data.type === 'COMMAND_QUICK_NEXT') els.btnQuickNext.click();
                     else if (data.type === 'COMMAND_TOGGLE_MSG') els.btnShowMsg.click();
                     else if (data.type === 'REQUEST_STATE') {
-                        // Send state back to the specific peer who asked
+                        // Send state back specifically to the peer who asked
                         sendStateP2P(AppState, peerId);
                     }
                 });
                 
-                // Backup: Try sending state automatically when a peer joins
+                // Backup proactively push state when a peer joins
                 p2pRoom.onPeerJoin(peerId => {
+                    console.log("Peer joined, proactively sending state to:", peerId);
                     sendStateP2P(AppState, peerId);
                 });
             } 
@@ -834,18 +842,22 @@
                 // Listen for state updates from Host
                 let receivedState = false;
                 getStateP2P(data => {
+                    console.log("Viewer received state update");
                     receivedState = true;
                     updateLiveUIFromState(data);
                 });
                 
                 // When joining, proactively request state from peers
                 p2pRoom.onPeerJoin(peerId => {
-                    sendCmdP2P({ type: 'REQUEST_STATE' }, peerId);
+                     console.log("Found peer, requesting state from:", peerId);
+                     sendCmdP2P({ type: 'REQUEST_STATE' }, peerId);
                 });
 
                 // Polling fallback to guarantee state payload gets received
+                // If it doesn't receive state within 2 seconds of peers existing, ask again
                 const requestInterval = setInterval(() => {
                     if (!receivedState && p2pRoom.getPeers().length > 0) {
+                         console.log("State not received yet, requesting again...");
                          sendCmdP2P({ type: 'REQUEST_STATE' });
                     } else if (receivedState) {
                         clearInterval(requestInterval);

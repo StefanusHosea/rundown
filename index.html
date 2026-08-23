@@ -6,37 +6,19 @@
    Codecrafted by hello@stefanushosea.com
 
 --->
-<html dev="stefanus@hosea.id" lang="en">
+<html dev="stefanus@hosea.id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RunDown</title>
-    <meta property="og:title" content="RunDown"/>
-    <meta name="description" content="An intuitive countdown and segment timer for live events • Codecrafted by stefanus@hosea.id">
-    <meta property="og:description" content="An intuitive countdown and segment timer for live events • Codecrafted by stefanus@hosea.id">
-    <meta property="og:type" content="website"/>
-    <meta property="og:url" content="https://rundown.hosea.id"/>
-    <meta property="og:image" content="https://rundown.hosea.id/share.jpg"/>
-    <meta property="og:image:type" content="image/jpeg"/>
-    <meta property="og:image:width" content="1200"/>
-    <meta property="og:image:height" content="630"/>
-    <meta name="author" content="Stefanus Hosea"/>
-    <meta name="keywords" content="rundown, run, time, countdown, clock, timer, presenter, presentation"/>
-    <meta property="og:site_name" content="RunDown"/>
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="RunDown"/>
-    <meta name="application-name" content="RunDown"/>
-    <link rel="apple-touch-icon" href="https://rundown.hosea.id/apple-touch-icon.png"/>
-    <meta name="theme-color" content="#242424"/>
-    <meta name="msapplication-navbutton-color" content="#242424"/>
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
-    <link rel="manifest" href="https://rundown.hosea.id/site.webmanifest" >
+    <!-- ... existing meta tags ... -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;1,200;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
+    <!-- Load Trystero for Serverless P2P syncing -->
+    <script src="https://cdn.jsdelivr.net/npm/trystero@0.20.1/dist/trystero-torrent.min.js"></script>
     <style>
+        /* ... existing css variables and reset ... */
         :root {
             --bg-dark: rgba(0,0,0,.5);
             --bg-light: rgba(255,255,255,.15);
@@ -72,7 +54,7 @@
         .hidden { display: none !important; }
         .invisible { visibility: hidden; }
 
-        /* --- BUTTONS --- */
+        /* ... existing button css ... */
         button {
             font-family: var(--font-main);
             cursor: pointer;
@@ -121,13 +103,9 @@
             border-color: var(--bg-dark);
         }
 
-        .pill-btn.small {
-            padding: 6px 12px;
-            font-size: 12px;
-            border-radius: 4px;
-        }
+        .pill-btn.small { padding: 4px 12px; font-size: 14px; border-radius: 4px;}
 
-        /* --- VIEWS --- */
+        /* ... existing views css ... */
         .view-container {
             width: 100vw;
             height: 100dvh;
@@ -175,7 +153,7 @@
             opacity: .6;
         }
         .prog-header .credit {
-            font-size: 8px;
+            font-size: 10px;
             opacity: .25;
             transition: opacity .5s ease;
         }
@@ -234,6 +212,28 @@
             margin-top: auto;
             padding-bottom: 10px;
         }
+        
+        .p2p-status {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            opacity: 0.5;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .p2p-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: gray;
+        }
+        .p2p-indicator.active {
+            background-color: #4CAF50;
+            box-shadow: 0 0 5px #4CAF50;
+        }
 
         /* Bottom Control Area */
         .prog-control-area {
@@ -284,12 +284,6 @@
             padding: 4px;
         }
 
-        tr:first-child td { padding-top: 0; }
-        tr:last-child td { padding-bottom: 0; }
-        tr td:first-child { padding-left: 0; }
-        tr td:last-child { padding-right: 0; }
-        th:first-child { padding-left: 0; }
-
         .table-input {
             width: 100%;
             padding: 8px;
@@ -302,10 +296,7 @@
         
         .table-input.time-input { text-align: center; min-width: 90px; }
         .table-input.color-input { padding: 0; width: 32px; height: 32px; cursor: pointer; border: none; background: none; }
-        .duration-input::-webkit-calendar-picker-indicator {
-            display: none;
-        }
-
+        
         #editor-container {
             width: 100%;
             flex: 1;
@@ -316,10 +307,10 @@
         #raw-editor {
             width: 100%;
             flex: 1;
-            font-family: var(--font-main);
-            font-size: 14px;
             min-height: 150px;
+            margin-bottom: 10px;
             padding: 12px;
+            font-family: monospace;
             font-size: 14px;
             background-color: var(--input-bg);
             color: #000000;
@@ -554,8 +545,22 @@
         }
         .readonly-input:focus { outline: none; }
 
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+            background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        .modal {
+            background: #242424; padding: 30px; border-radius: 8px; max-width: 500px; width: 90%; text-align: center;
+            color: white; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .modal input {
+            width: 100%; padding: 10px; margin: 15px 0; background: #111; color: white; border: 1px solid #444; border-radius: 4px;
+        }
+
         /* --- RESPONSIVENESS --- */
-        @media (max-width: 865px) {
+        @media (max-width: 768px) {
             .prog-display-area { padding: 15px 20px; flex: 0 0 auto; min-height: 45dvh; }
             .prog-control-area { padding: 25px 20px; flex-direction: column; gap: 25px; }
             .prog-header { margin-bottom: 20px; }
@@ -581,6 +586,11 @@
                 <div class="credit">Codecrafted by <a href="https://stefanus.hosea.id" target="_blank"><strong>Stefanus Hosea</strong></a></div>
             </div>
             
+            <div class="p2p-status">
+                <div id="p2p-indicator" class="p2p-indicator"></div>
+                <span id="p2p-label">Local</span>
+            </div>
+
             <div class="prog-main-clock">
                 <div id="prog-title" class="segment-title"></div>
                 <div id="prog-clock" class="live-clock">00:00:00</div>
@@ -589,7 +599,10 @@
 
             <div class="prog-display-controls">
                 <button id="btn-quick-next" class="pill-btn">QUICK NEXT</button>
-                <button id="btn-present" class="pill-btn">PRESENT</button>
+                <div style="display:flex; gap:10px;">
+                    <button id="btn-share" class="pill-btn outline">SHARE LINK</button>
+                    <button id="btn-present" class="pill-btn">PRESENT</button>
+                </div>
             </div>
         </div>
 
@@ -603,7 +616,7 @@
                             <tr>
                                 <th style="width: 15%;">START</th>
                                 <th style="width: 15%;">END</th>
-                                <th style="width: 45%;">SEGMENT</th>
+                                <th style="width: 45%;">TITLE</th>
                                 <th style="width: 15%;">DURATION</th>
                                 <th style="width: 5%;">COLOR</th>
                                 <th style="width: 5%;"></th>
@@ -627,7 +640,7 @@
                         <input type="file" id="file-input" accept=".run" class="hidden">
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <button id="btn-editor-mode" class="pill-btn outline small">EDITOR</button>
+                        <button id="btn-editor-mode" class="pill-btn outline small">RAW EDITOR</button>
                         <button id="btn-add-row" class="pill-btn outline small">+ ADD</button>
                     </div>
                 </div>
@@ -636,13 +649,13 @@
             <!-- Right: Message -->
             <div class="message-section">
                 <div class="section-label">MESSAGE</div>
-                <textarea id="message-input" placeholder="Use **bold** and _italic_ on your message"></textarea>
+                <textarea id="message-input" placeholder="Display a message with **markdown** _formatting_"></textarea>
                 <div class="msg-btn-container">
                     <div class="msg-color-presets" id="msg-color-presets">
-                        <button class="color-preset-btn" data-bg="#ffffff" data-color="#000000" style="background-color: #ffffff;" title="White"></button>
-                        <button class="color-preset-btn" data-bg="#000000" data-color="#ffffff" style="background-color: #000000;" title="Black"></button>
                         <button class="color-preset-btn" data-bg="#b10000" data-color="#ffffff" style="background-color: #b10000;" title="Red"></button>
                         <button class="color-preset-btn" data-bg="#fdee00" data-color="#000000" style="background-color: #fdee00;" title="Yellow"></button>
+                        <button class="color-preset-btn" data-bg="#ffffff" data-color="#000000" style="background-color: #ffffff;" title="White"></button>
+                        <button class="color-preset-btn" data-bg="#000000" data-color="#ffffff" style="background-color: #000000;" title="Black"></button>
                     </div>
                     <button id="btn-show-msg" class="pill-btn filled">SHOW</button>
                 </div>
@@ -707,12 +720,20 @@
             }
         }
 
-        // Channel for syncing between Program and Live views
+        // --- SYNC SYSTEMS ---
+        // 1. Local window-to-window sync (BroadcastChannel)
         const syncChannel = new BroadcastChannel('runup_sync_channel');
         
+        // 2. P2P WebRTC Sync (Trystero)
+        let p2pRoom = null;
+        let sendStateP2P = null;
+        let sendCmdP2P = null;
+        const P2P_CONFIG = { appId: 'rundown-timer-v1' };
+
         // Mode detection
         const urlParams = new URLSearchParams(window.location.search);
         const isLiveView = urlParams.get('view') === 'live';
+        const p2pRoomId = urlParams.get('room');
 
         // --- UTILS ---
         function timeToSeconds(timeStr) {
@@ -795,6 +816,10 @@
                 AppState.segments[i].end = secondsToTime(timeToSeconds(AppState.segments[i].start) + timeToSeconds(AppState.segments[i].duration));
             }
         }
+        
+        function generateId() {
+            return Math.random().toString(36).substring(2, 8);
+        }
 
         // --- DOM ELEMENTS ---
         const els = {
@@ -823,6 +848,7 @@
             btnShowMsg: document.getElementById('btn-show-msg'),
             colorPresets: document.querySelectorAll('.color-preset-btn'),
             btnPresent: document.getElementById('btn-present'),
+            btnShare: document.getElementById('btn-share'),
             btnQuickNext: document.getElementById('btn-quick-next'),
             btnAddRow: document.getElementById('btn-add-row'),
             btnEditorMode: document.getElementById('btn-editor-mode'),
@@ -831,7 +857,11 @@
             tableResponsive: document.querySelector('.table-responsive'),
             btnLoad: document.getElementById('btn-load'),
             btnExport: document.getElementById('btn-export'),
-            fileInput: document.getElementById('file-input')
+            fileInput: document.getElementById('file-input'),
+            
+            // P2P
+            p2pInd: document.getElementById('p2p-indicator'),
+            p2pLabel: document.getElementById('p2p-label')
         };
 
         let lastActiveSegmentId = null;
@@ -984,11 +1014,25 @@
         }
 
         function broadcastState() {
-            saveStateToStorage();
-            syncChannel.postMessage({
-                type: 'STATE_UPDATE',
-                payload: AppState
-            });
+            if (!isLiveView) saveStateToStorage();
+            
+            // 1. Sync Local
+            syncChannel.postMessage({ type: 'STATE_UPDATE', payload: AppState });
+            
+            // 2. Sync P2P (if active and host)
+            if (sendStateP2P && !isLiveView && p2pRoomId) {
+                sendStateP2P(AppState);
+            }
+        }
+        
+        function sendCommand(cmd) {
+            // 1. Sync Local
+            syncChannel.postMessage({ type: cmd });
+            
+            // 2. Sync P2P (if remote viewer sending to host)
+            if (sendCmdP2P && isLiveView && p2pRoomId) {
+                sendCmdP2P({ type: cmd });
+            }
         }
 
         function handleDataChange(index, field, value) {
@@ -1220,7 +1264,7 @@
                     
                     els.tableResponsive.classList.remove('hidden');
                     els.editorContainer.classList.add('hidden');
-                    els.btnEditorMode.textContent = "EDITOR";
+                    els.btnEditorMode.textContent = "RAW EDITOR";
                     els.btnEditorMode.classList.remove('filled', 'active');
                     els.btnEditorMode.classList.add('outline');
                     els.btnAddRow.classList.remove('hidden');
@@ -1277,15 +1321,64 @@
                 els.fileInput.value = ''; // reset
             });
 
-            // Present Button (Open Popup)
+            // Present Button (Open Popup Local)
             els.btnPresent.addEventListener('click', () => {
                 const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.delete('room'); // Ensure local present isn't P2P
                 currentUrl.searchParams.set('view', 'live');
-                // Open new window. Browsers usually allow this on user interaction.
                 window.open(currentUrl.href, 'RunDownLiveWindow', 'width=1280,height=720,menubar=no,toolbar=no,location=no,status=no');
-                
-                // Ensure current state is broadcasted slightly after open to sync
                 setTimeout(broadcastState, 1000); 
+            });
+            
+            // Share Link (P2P Host)
+            els.btnShare.addEventListener('click', () => {
+                let shareUrlHref = window.location.href;
+                
+                if (!p2pRoomId) {
+                    const newId = generateId();
+                    // Fallback URL construction for blob environments
+                    const currentUrl = new URL(window.location.href);
+                    
+                    if (currentUrl.protocol === 'blob:') {
+                        // In blob environments, history API fails. Just append the parameter manually.
+                        shareUrlHref = currentUrl.href + (currentUrl.href.includes('?') ? '&' : '?') + 'room=' + newId;
+                    } else {
+                        // In standard environments, update URL securely
+                        currentUrl.searchParams.set('room', newId);
+                        window.history.replaceState({}, '', currentUrl);
+                        shareUrlHref = currentUrl.href;
+                    }
+                    
+                    initP2P(newId);
+                }
+                
+                // Construct URL for Viewer
+                const viewerUrl = new URL(shareUrlHref);
+                viewerUrl.searchParams.set('view', 'live'); // Force live view for receiver
+                
+                // Show modal
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal">
+                        <h3>Share Live View</h3>
+                        <p style="font-size:12px; margin-top:5px; opacity:0.8;">Share this link to instantly broadcast your timer to another device via P2P. No accounts required.</p>
+                        <input type="text" readonly value="${viewerUrl.href}" id="share-url">
+                        <div style="display:flex; justify-content:center; gap:10px;">
+                            <button id="btn-copy" class="pill-btn filled">COPY LINK</button>
+                            <button id="btn-close-modal" class="pill-btn outline">CLOSE</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                document.getElementById('btn-copy').onclick = () => {
+                    const input = document.getElementById('share-url');
+                    input.select();
+                    document.execCommand('copy');
+                    document.getElementById('btn-copy').textContent = 'COPIED!';
+                };
+                document.getElementById('btn-close-modal').onclick = () => modal.remove();
             });
         }
 
@@ -1301,7 +1394,7 @@
                 case 'q':
                     e.preventDefault();
                     if (isLiveView) {
-                        syncChannel.postMessage({ type: 'COMMAND_QUICK_NEXT' });
+                        sendCommand('COMMAND_QUICK_NEXT');
                     } else {
                         els.btnQuickNext.click();
                     }
@@ -1313,7 +1406,7 @@
                 case '1':
                     e.preventDefault();
                     if (isLiveView) {
-                        syncChannel.postMessage({ type: 'COMMAND_TOGGLE_MSG' });
+                        sendCommand('COMMAND_TOGGLE_MSG');
                     } else {
                         els.btnShowMsg.click();
                     }
@@ -1359,6 +1452,57 @@
                 els.lMsgContainer.classList.remove('msg-visible');
             }
         }
+        
+        // --- P2P SERVERLESS SYNC ---
+        function initP2P(roomId) {
+            if (!window.trystero) return console.warn("Trystero not loaded");
+            
+            p2pRoom = trystero.joinRoom(P2P_CONFIG, roomId);
+            els.p2pLabel.textContent = isLiveView ? 'P2P Receiving' : 'P2P Broadcasting';
+            
+            const [sendState, getState] = p2pRoom.makeAction('stateSync');
+            const [sendCmd, getCmd] = p2pRoom.makeAction('cmdSync');
+            const [reqState, onReqState] = p2pRoom.makeAction('reqState');
+            
+            sendStateP2P = sendState;
+            sendCmdP2P = sendCmd;
+            
+            p2pRoom.onPeerJoin(peerId => {
+                els.p2pInd.classList.add('active');
+                if (!isLiveView) {
+                    // Host automatically sends state to new peers
+                    sendStateP2P(AppState, peerId);
+                } else {
+                    // New viewers request state immediately
+                    reqState({}, peerId);
+                }
+            });
+            
+            p2pRoom.onPeerLeave(peerId => {
+                const peers = p2pRoom.getPeers();
+                if(Object.keys(peers).length === 0) {
+                     els.p2pInd.classList.remove('active');
+                }
+            });
+            
+            if (isLiveView) {
+                // Viewer receives state
+                getState(data => {
+                    updateLiveUIFromState(data);
+                });
+            } else {
+                // Host receives commands from viewer shortcuts
+                getCmd((data, peerId) => {
+                    if (data.type === 'COMMAND_QUICK_NEXT') els.btnQuickNext.click();
+                    else if (data.type === 'COMMAND_TOGGLE_MSG') els.btnShowMsg.click();
+                });
+                
+                // Host responds to state requests
+                onReqState((_, peerId) => {
+                    sendStateP2P(AppState, peerId);
+                });
+            }
+        }
 
         // --- INITIALIZATION ---
         
@@ -1370,19 +1514,29 @@
                 els.liveView.classList.remove('hidden');
                 els.liveView.style.display = 'flex'; // override default
                 
-                // Listen for sync
+                // Listen for local sync (Pop-up)
                 syncChannel.onmessage = (event) => {
                     if (event.data.type === 'STATE_UPDATE') {
                         updateLiveUIFromState(event.data.payload);
                     }
                 };
                 
-                // Request initial state (Optional: assumes Program view is open and will broadcast on load)
-                syncChannel.postMessage({ type: 'REQUEST_STATE' });
+                // Initialize P2P if room ID present in URL
+                if (p2pRoomId) {
+                    initP2P(p2pRoomId);
+                } else {
+                    // Only request local state if not P2P
+                    syncChannel.postMessage({ type: 'REQUEST_STATE' });
+                }
                 
             } else {
                 // Setup Program View
                 loadStateFromStorage();
+                
+                // Initialize P2P Host if room ID present from previous session
+                if (p2pRoomId) {
+                    initP2P(p2pRoomId);
+                }
                 
                 // Init message box state
                 els.msgInput.value = AppState.message;
@@ -1416,10 +1570,10 @@
                 renderTable();
                 setupProgramControls();
                 
-                // Listen for requests from newly opened live windows
+                // Listen for requests from newly opened local live windows
                 syncChannel.onmessage = (event) => {
                     if (event.data.type === 'REQUEST_STATE') {
-                        broadcastState();
+                        syncChannel.postMessage({ type: 'STATE_UPDATE', payload: AppState });
                     } else if (event.data.type === 'COMMAND_QUICK_NEXT') {
                         els.btnQuickNext.click();
                     } else if (event.data.type === 'COMMAND_TOGGLE_MSG') {

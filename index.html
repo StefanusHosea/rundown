@@ -509,7 +509,7 @@
             background-color: var(--accent-red);
             color: white;
             font-size: clamp(20px, 3vw, 30px);
-            font-weight: 600;
+            font-weight: 400;
             overflow: hidden;
             white-space: nowrap;
             position: relative;
@@ -1722,11 +1722,16 @@
             .then(res => res.ok ? res.json() : Promise.reject(new Error('cities.json HTTP ' + res.status)))
             .then(list => { if (Array.isArray(list) && list.length) cityNames = list; })
             .catch(err => { console.warn('Could not load cities.json, room names will fall back to random IDs.', err); });
-        async function ensureControlToken(roomId) {
+        function getSavedControlToken(roomId) {
             try {
                 const saved = JSON.parse(localStorage.getItem(CONTROL_TOKEN_KEY) || 'null');
                 if (saved && saved.roomId === roomId && saved.token) return saved.token;
             } catch(e) {}
+            return null;
+        }
+        async function ensureControlToken(roomId) {
+            const saved = getSavedControlToken(roomId);
+            if (saved) return saved;
             const token = await generateRoomName();
             try {
                 localStorage.setItem(CONTROL_TOKEN_KEY, JSON.stringify({ roomId, token }));
@@ -1825,7 +1830,8 @@
             if (!text) return '';
             return text
                 .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-                .replace(/\*(.*?)\*/g, '<i>$1</i>');
+                .replace(/\*(.*?)\*/g, '<i>$1</i>')
+                .replace(/_(.*?)_/g, '<i>$1</i>');
         }
         function getContrastYIQ(hexcolor) {
             if (!hexcolor) return '#ffffff';
@@ -2447,7 +2453,7 @@
                 }
             } else {
                 loadStateFromStorage();
-                if (p2pRoomId) {
+                if (p2pRoomId && getSavedControlToken(p2pRoomId)) {
                     initP2P(p2pRoomId);
                 }
                 els.msgInput.value = AppState.message;

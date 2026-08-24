@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <!---
-   
    RunDown • An intuitive countdown and segment timer for live events
    Initial: v2026.07.14
    Codecrafted by hello@stefanushosea.com
-
 --->
 <html dev="stefanus@hosea.id">
 <head>
@@ -35,13 +33,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;1,200;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
-    
-    <!-- Load Trystero for Serverless P2P syncing -->
     <script type="module">
         import { joinRoom } from 'https://cdn.jsdelivr.net/npm/@trystero-p2p/torrent@0.25.3/+esm';
         window.trystero = { joinRoom };
     </script>
-    
     <style>
         :root {
             --bg-dark: rgba(0,0,0,.5);
@@ -55,46 +50,24 @@
             --input-bg: #ffffff;
             --font-main: 'Bai Jamjuree', sans-serif;
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-
-        ::selection{
-            background: transparent;
-            color: rgba(0,0,0,.75);
-        }
-
-        ::-webkit-scrollbar {
-            width: 5px;
-            background: #000;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #242424;
-            border-radius: 0px;
-        }
-
         body {
             font-family: var(--font-main);
             font-weight: 300;
-            overflow: hidden; /* Prevent scrolling on main views */
+            overflow: hidden; 
             background-color: var(--bg-dark);
             color: var(--text-light);
         }
         a {
             color: inherit;
             text-decoration: none;
-            outline: none;
         }
-
-        /* --- UTILITY CLASSES --- */
         .hidden { display: none !important; }
         .invisible { visibility: hidden; }
-
-        /* --- BUTTONS --- */
         button {
             font-family: var(--font-main);
             cursor: pointer;
@@ -105,7 +78,6 @@
             letter-spacing: 1px;
             text-transform: uppercase;
         }
-
         .pill-btn {
             background-color: rgba(128, 128, 128, 0.15);
             color: inherit;
@@ -115,12 +87,10 @@
             border: 1px solid currentColor;
             opacity: 0.8;
         }
-        
         .pill-btn:hover { 
             background-color: rgba(128, 128, 128, 0.3); 
             opacity: 1;
         }
-        
         .pill-btn.outline {
             background-color: transparent;
             color: inherit;
@@ -128,7 +98,6 @@
             padding: 6px 16px;
         }
         .pill-btn.outline:hover { background-color: rgba(128,128,128,0.15); }
-
         .pill-btn.filled { 
             background-color: rgba(128, 128, 128, 0.15); 
             color: inherit; 
@@ -137,30 +106,21 @@
             padding: 6px 16px; 
         }
         .pill-btn.filled:hover { background-color: rgba(128, 128, 128, 0.3); }
-        .pill-btn.filled.active { 
-            background-color: var(--bg-dark); 
+        .pill-btn.filled.active, .pill-btn.outline.active {
+            background-color: var(--bg-dark);
             color: white;
             border-color: var(--bg-dark);
         }
-
         .pill-btn.small { padding: 4px 12px; font-size: 14px; border-radius: 4px;}
-
-        /* --- VIEWS --- */
         .view-container {
             width: 100vw;
             height: 100dvh;
             display: flex;
             flex-direction: column;
         }
-
-        /* =========================================
-           PROGRAM VIEW (MAIN BROWSER)
-           ========================================= */
         #program-view {
             transition: background-color 0.4s ease, color 0.4s ease;
         }
-
-        /* Top Display Area */
         .prog-display-area {
             flex: 0 0 65%;
             display: flex;
@@ -169,14 +129,12 @@
             padding: 20px 40px;
             background-image: linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,0) 50%);
         }
-
         .prog-header {
             display: flex;
             justify-content: space-between;
             font-size: 14px;
             margin-bottom: auto;
         }
-
         .prog-header .logo {
             font-size: 18px;
             font-weight: 300;
@@ -212,7 +170,6 @@
         .prog-header .credit a:hover {
             opacity: 1;
         }
-
         .prog-main-clock {
             text-align: center;
             margin: auto;
@@ -221,7 +178,6 @@
             align-items: center;
             justify-content: center;
         }
-
         .segment-title {
             font-size: clamp(20px, 5vw, 45px);
             font-weight: 600;
@@ -245,15 +201,12 @@
             min-height: 1.2em;
             opacity: .5
         }
-
         .prog-display-controls {
             display: flex;
             justify-content: space-between;
             margin-top: auto;
             padding-bottom: 10px;
         }
-
-        /* Bottom Control Area */
         .prog-control-area {
             flex: 1;
             display: flex;
@@ -262,33 +215,27 @@
             overflow-y: auto;
             background-image: linear-gradient(rgba(255, 255, 255, .2), rgba(255, 255, 255, .4));
         }
-
         .table-section {
             flex: 3;
             display: flex;
             flex-direction: column;
         }
-
         .table-responsive {
             width: 100%;
             overflow-x: auto;
         }
-
         .table-responsive::-webkit-scrollbar {
-            display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+            display: none; 
         }
-
         .table-responsive {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;  
+            scrollbar-width: none;  
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 10px;
         }
-
         th {
             text-align: left;
             font-size: 12px;
@@ -297,11 +244,9 @@
             font-weight: 600;
             padding: 0 4px 8px;
         }
-
         td {
             padding: 4px;
         }
-
         .table-input {
             width: 100%;
             padding: 8px;
@@ -311,17 +256,14 @@
             font-size: 14px;
             color: #000000;
         }
-        
         .table-input.time-input { text-align: center; min-width: 90px; }
         .table-input.color-input { padding: 0; width: 32px; height: 32px; cursor: pointer; border: none; background: none; }
-        
         #editor-container {
             width: 100%;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
-        
         #raw-editor {
             width: 100%;
             flex: 1;
@@ -335,7 +277,6 @@
             border: 1px solid rgba(128,128,128,0.3);
             resize: vertical;
         }
-
         .row-controls {
             display: flex;
             gap: 4px;
@@ -343,7 +284,6 @@
             align-items: center;
             color: inherit;
         }
-        
         .row-controls button {
             background: none;
             border: none;
@@ -361,29 +301,23 @@
             line-height: 0;
             margin-top: -5px;
         }
-
         .row-controls button:hover{
             opacity: .75;
         }
-        
         tr.dragging { opacity: 0.5; background-color: rgba(128,128,128,0.1); }
-
         .bottom-actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 10px;
         }
-        
         .file-actions { display: flex; gap: 10px; }
-
         .message-section {
             flex: 1;
             display: flex;
             flex-direction: column;
             min-width: 250px;
         }
-
         .section-label {
             font-size: 12px;
             color: inherit;
@@ -392,7 +326,6 @@
             margin-bottom: 8px;
             text-transform: uppercase;
         }
-
         #message-input {
             flex: 1;
             resize: none;
@@ -405,18 +338,15 @@
             margin-bottom: 10px;
             min-height: 150px;
         }
-
         .msg-btn-container { 
             display: flex;
             justify-content: space-between;
             align-items: center; 
         }
-
         .msg-color-presets {
             display: flex;
             gap: 8px;
         }
-
         .color-preset-btn {
             width: 20px;
             height: 20px;
@@ -426,16 +356,12 @@
             padding: 0;
             transition: transform 0.2s ease filter .5s ease;
         }
-
         .color-preset-btn:hover {
             transform: scale(1.1);
         }
-
         .color-preset-btn.active {
             filter: brightness(1.15);
         }
-
-        /* --- SHARE MODAL --- */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -485,7 +411,6 @@
             border-radius: 6px;
             overflow: hidden;
         }
-
         #share-url-input {
             flex: 1;
             padding: 10px;
@@ -496,7 +421,6 @@
             font-size: 14px;
             outline: none;
         }
-
         .share-control-toggle {
             display: inline-flex;
             align-items: center;
@@ -506,16 +430,11 @@
             margin-bottom: 16px;
             cursor: pointer;
         }
-
         .share-qr-wrap {
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
         }
-
-        /* QR modules are always rendered black-on-white regardless of the app's dark theme -
-           that's what phone camera scanners expect; an inverted (light-on-dark) code is
-           unreliable to scan. */
         .share-qr {
             background-color: #fff;
             padding: 2px;
@@ -526,28 +445,20 @@
             align-items: center;
             justify-content: center;
         }
-
         .share-qr svg {
             display: block;
             width: 100%;
             height: 100%;
         }
-
         .modal-actions {
             display: flex;
             justify-content: center;
             gap: 15px;
         }
-
-
-        /* =========================================
-           LIVE VIEW (POPUP WINDOW)
-           ========================================= */
         #live-view {
             transition: background-color 0.4s ease, color 0.4s ease;
             justify-content: space-between;
         }
-
         .live-main {
             flex: 1;
             display: flex;
@@ -558,11 +469,9 @@
             padding-top: 5dvh;
             background-image: linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,0) 50%);
         }
-
-        #live-view .segment-title { font-size: 4vw; margin-bottom: 1dvh; }
-        #live-view .live-clock { font-size: 15vw; margin-bottom: 1dvh; }
-        #live-view .countdown { font-size: 5vw; }
-
+        #live-view .segment-title { font-size: clamp(15px, 4vw, 100px); margin-bottom: .5dvh; }
+        #live-view .live-clock { font-size: clamp(50px, 15vw, 300px); margin-bottom: .5dvh; }
+        #live-view .countdown { font-size: clamp(25px, 5vw, 100px); }
         .live-connecting-badge {
             position: fixed;
             top: 20px;
@@ -580,55 +489,61 @@
             background-color: rgba(128,128,128,0.15);
             z-index: 10;
         }
-
+        .live-connecting-badge .pulse-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin-top: -2px;
+            margin-right: 8px;
+            border-radius: 50%;
+            background-color: #ff9e00;
+            vertical-align: middle;
+            animation: pulseDot 1.4s ease-in-out infinite;
+        }
+        @keyframes pulseDot {
+            0% { box-shadow: 0 0 0 0 rgba(255, 158, 0, 1); }
+            70% { box-shadow: 0 0 0 6px rgba(255, 158, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 158, 0, 0); }
+        }
         .live-message-banner {
             background-color: var(--accent-red);
             color: white;
-            font-size: 3vw;
+            font-size: clamp(20px, 3vw, 30px);
             font-weight: 600;
             overflow: hidden;
             white-space: nowrap;
             position: relative;
-            /* Slide entrance/exit transitions */
             max-height: 0;
             opacity: 0;
             transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
             background-image: linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,0));
         }
-
         .live-message-banner.msg-visible {
-            max-height: 10dvh; /* Enough to display content */
+            max-height: 10dvh; 
             opacity: 1;
         }
-
         .marquee-content {
             display: inline-block;
-            padding: 1.5dvh 0; /* Padding moved inside for smooth collapse */
+            padding: 1.5dvh 0; 
         }
-
         .static-measure {
             display: inline-block;
             padding-left: 0;
             white-space: nowrap;
         }
-
         .marquee-static {
             display: block;
             text-align: center;
             padding-left: 0;
         }
-
         .marquee-active {
             padding-left: 100%;
             animation: marquee 20s linear infinite;
         }
-        
-        /* Stop animation if content is short enough, managed via JS optionally, but CSS infinite is fine */
         @keyframes marquee {
             0% { transform: translate(0, 0); }
             100% { transform: translate(-100%, 0); }
         }
-
         .live-footer {
             background-image: linear-gradient(#fff, rgba(255, 255, 255, .75)); 
             color: var(--text-dark);
@@ -637,29 +552,23 @@
             flex-direction: column;
             justify-content: center;
         }
-
         .live-footer .next-label {
-            font-size: 1vw;
+            font-size: clamp(10px, 1vw, 15px);
             font-weight: 700;
             color: rgba(0,0,0,.35);
             letter-spacing: 2px;
             text-transform: uppercase;
         }
-
         .live-footer .next-info {
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
-            font-size: 2.5vw;
+            align-items: center;
+            font-size: clamp(20px, 2.5vw, 30px);
             font-weight: 600;
             line-height: 1.1;
         }
-
-        /* Markdown bold/italic styling */
         b, strong { font-weight: 700; }
         i, em { font-style: italic; }
-
-        /* Sleek Digit Transition & States */
         .live-clock, .countdown { font-variant-numeric: tabular-nums; }
         .digit { display: inline-block; min-width: 0.65em; text-align: center; }
         .live-clock .digit:nth-child(3), .live-clock .digit:nth-child(6) { margin: 0 -2.5vw; }
@@ -669,13 +578,11 @@
             0% { opacity: 0.3; }
             100% { opacity: 1; }
         }
-
         .swipe-up { animation: swipeUpAnim 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes swipeUpAnim {
             0% { transform: translateY(30px); opacity: 0; }
             100% { transform: translateY(0); opacity: 1; }
         }
-        
         .readonly-input {
             background-color: transparent;
             border-color: transparent;
@@ -684,8 +591,6 @@
             cursor: default;
         }
         .readonly-input:focus { outline: none; }
-
-        /* --- RESPONSIVENESS --- */
         @media (max-width: 768px) {
             .prog-display-area { padding: 15px 20px; flex: 0 0 auto; min-height: 45dvh; }
             .prog-control-area { padding: 25px 20px; flex-direction: column; gap: 25px; }
@@ -698,33 +603,31 @@
             #message-input { min-height: 50px; font-size: 12px; }
             .table-responsive { mask: linear-gradient(90deg, black 90%, transparent) }
         }
-
     </style>
 </head>
 <body>
-
     <div id="program-view" class="view-container">
         <div id="prog-display-area" class="prog-display-area">
             <div class="prog-header">
                 <div class="logo">Run<strong>Down</strong><span class="version">v2026.07.14.2240</span></div>
                 <div class="credit">Codecrafted by <a href="https://stefanus.hosea.id" target="_blank"><strong>Stefanus Hosea</strong></a></div>
             </div>
-            
             <div class="prog-main-clock">
                 <div id="prog-title" class="segment-title"></div>
                 <div id="prog-clock" class="live-clock">00:00:00</div>
                 <div id="prog-countdown" class="countdown"></div>
             </div>
-
             <div class="prog-display-controls">
-                <button id="btn-quick-next" class="pill-btn">QUICK NEXT</button>
+                <div style="display:flex; gap: 10px;">
+                    <button id="btn-swap-clock" class="pill-btn outline" title="Swap the clock and countdown display">SWAP</button>
+                    <button id="btn-quick-next" class="pill-btn">QUICK NEXT</button>
+                </div>
                 <div style="display:flex; gap: 10px;">
                     <button id="btn-share-link" class="pill-btn outline">SHARE LINK</button>
                     <button id="btn-present" class="pill-btn">PRESENT</button>
                 </div>
             </div>
         </div>
-
         <div class="prog-control-area">
             <div class="table-section">
                 <div class="table-responsive">
@@ -743,12 +646,10 @@
                         </tbody>
                     </table>
                 </div>
-                
                 <div id="editor-container" class="hidden">
                     <div class="section-label">EDITOR MODE</div>
                     <textarea id="raw-editor" spellcheck="false" placeholder="Start | End | Segment | Duration | Color Hex&#10;12:00:00 | 13:00:00 | Opening Segment | 01:00:00 | #000000"></textarea>
                 </div>
-                
                 <div class="bottom-actions">
                     <div class="file-actions">
                         <button id="btn-load" class="pill-btn outline">LOAD</button>
@@ -761,7 +662,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="message-section">
                 <div class="section-label">MESSAGE</div>
                 <textarea id="message-input" placeholder="Display a message with **markdown** _formatting_"></textarea>
@@ -777,38 +677,34 @@
             </div>
         </div>
     </div>
-
     <div id="live-view" class="view-container hidden">
-        <div id="live-connecting" class="live-connecting-badge hidden">Connecting…</div>
+        <div id="live-connecting" class="live-connecting-badge hidden"><span class="pulse-dot"></span>Connecting…</div>
         <div class="live-main">
             <div id="live-title" class="segment-title"></div>
             <div id="live-clock" class="live-clock">00:00:00</div>
             <div id="live-countdown" class="countdown"></div>
         </div>
-        
         <div id="live-msg-container" class="live-message-banner">
             <div id="live-marquee" class="marquee-content"></div>
         </div>
-
         <div id="live-footer" class="live-footer">
             <div class="next-info">
-                <div>
-                  <div class="next-label">UPCOMING NEXT</div>
-                  <span id="live-next-title">--</span>
-                </div>
-                <div>
-                  <span id="live-next-time">--:--</span>
-                </div>
+              <div>
+                <div class="next-label">UPCOMING NEXT</div>
+                <span id="live-next-title">--</span>
+              </div>
+              <div>
+                <span id="live-next-time">--:--</span>
+              </div>
             </div>
         </div>
     </div>
-
     <div id="share-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-title">Share Live View</div>
             <label class="share-control-toggle">
                 <input type="checkbox" id="share-control-checkbox">
-                Allow viewer to control playback (Quick Next)
+                Allow this link to control playback
             </label>
             <div class="share-url-container">
                 <input type="text" id="share-url-input" readonly>
@@ -819,37 +715,22 @@
             <div id="share-status" class="modal-desc">Waiting for a viewer to connect…</div>
             <div class="modal-actions">
                 <button id="btn-copy-url" class="pill-btn outline">COPY</button>
-                <button id="btn-close-modal" class="pill-btn outline">CLOSE</button>
             </div>
         </div>
     </div>
-
-
     <script>
-        // QR Code Generator
-
         var qrcode = function() {
-          /**
-           * qrcode
-           * @param typeNumber 1 to 40
-           * @param errorCorrectionLevel 'L','M','Q','H'
-           */
           var qrcode = function(typeNumber, errorCorrectionLevel) {
-
             var PAD0 = 0xEC;
             var PAD1 = 0x11;
-
             var _typeNumber = typeNumber;
             var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
             var _modules = null;
             var _moduleCount = 0;
             var _dataCache = null;
             var _dataList = [];
-
             var _this = {};
-
             var makeImpl = function(test, maskPattern) {
-
               _moduleCount = _typeNumber * 4 + 17;
               _modules = function(moduleCount) {
                 var modules = new Array(moduleCount);
@@ -861,35 +742,25 @@
                 }
                 return modules;
               }(_moduleCount);
-
               setupPositionProbePattern(0, 0);
               setupPositionProbePattern(_moduleCount - 7, 0);
               setupPositionProbePattern(0, _moduleCount - 7);
               setupPositionAdjustPattern();
               setupTimingPattern();
               setupTypeInfo(test, maskPattern);
-
               if (_typeNumber >= 7) {
                 setupTypeNumber(test);
               }
-
               if (_dataCache == null) {
                 _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
               }
-
               mapData(_dataCache, maskPattern);
             };
-
             var setupPositionProbePattern = function(row, col) {
-
               for (var r = -1; r <= 7; r += 1) {
-
                 if (row + r <= -1 || _moduleCount <= row + r) continue;
-
                 for (var c = -1; c <= 7; c += 1) {
-
                   if (col + c <= -1 || _moduleCount <= col + c) continue;
-
                   if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
                       || (0 <= c && c <= 6 && (r == 0 || r == 6) )
                       || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
@@ -900,36 +771,26 @@
                 }
               }
             };
-
             var getBestMaskPattern = function() {
-
               var minLostPoint = 0;
               var pattern = 0;
-
               for (var i = 0; i < 8; i += 1) {
-
                 makeImpl(true, i);
-
                 var lostPoint = QRUtil.getLostPoint(_this);
-
                 if (i == 0 || minLostPoint > lostPoint) {
                   minLostPoint = lostPoint;
                   pattern = i;
                 }
               }
-
               return pattern;
             };
-
             var setupTimingPattern = function() {
-
               for (var r = 8; r < _moduleCount - 8; r += 1) {
                 if (_modules[r][6] != null) {
                   continue;
                 }
                 _modules[r][6] = (r % 2 == 0);
               }
-
               for (var c = 8; c < _moduleCount - 8; c += 1) {
                 if (_modules[6][c] != null) {
                   continue;
@@ -937,26 +798,17 @@
                 _modules[6][c] = (c % 2 == 0);
               }
             };
-
             var setupPositionAdjustPattern = function() {
-
               var pos = QRUtil.getPatternPosition(_typeNumber);
-
               for (var i = 0; i < pos.length; i += 1) {
-
                 for (var j = 0; j < pos.length; j += 1) {
-
                   var row = pos[i];
                   var col = pos[j];
-
                   if (_modules[row][col] != null) {
                     continue;
                   }
-
                   for (var r = -2; r <= 2; r += 1) {
-
                     for (var c = -2; c <= 2; c += 1) {
-
                       if (r == -2 || r == 2 || c == -2 || c == 2
                           || (r == 0 && c == 0) ) {
                         _modules[row + r][col + c] = true;
@@ -968,32 +820,22 @@
                 }
               }
             };
-
             var setupTypeNumber = function(test) {
-
               var bits = QRUtil.getBCHTypeNumber(_typeNumber);
-
               for (var i = 0; i < 18; i += 1) {
                 var mod = (!test && ( (bits >> i) & 1) == 1);
                 _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
               }
-
               for (var i = 0; i < 18; i += 1) {
                 var mod = (!test && ( (bits >> i) & 1) == 1);
                 _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
               }
             };
-
             var setupTypeInfo = function(test, maskPattern) {
-
               var data = (_errorCorrectionLevel << 3) | maskPattern;
               var bits = QRUtil.getBCHTypeInfo(data);
-
-              // vertical
               for (var i = 0; i < 15; i += 1) {
-
                 var mod = (!test && ( (bits >> i) & 1) == 1);
-
                 if (i < 6) {
                   _modules[i][8] = mod;
                 } else if (i < 8) {
@@ -1002,12 +844,8 @@
                   _modules[_moduleCount - 15 + i][8] = mod;
                 }
               }
-
-              // horizontal
               for (var i = 0; i < 15; i += 1) {
-
                 var mod = (!test && ( (bits >> i) & 1) == 1);
-
                 if (i < 8) {
                   _modules[8][_moduleCount - i - 1] = mod;
                 } else if (i < 9) {
@@ -1016,53 +854,36 @@
                   _modules[8][15 - i - 1] = mod;
                 }
               }
-
-              // fixed module
               _modules[_moduleCount - 8][8] = (!test);
             };
-
             var mapData = function(data, maskPattern) {
-
               var inc = -1;
               var row = _moduleCount - 1;
               var bitIndex = 7;
               var byteIndex = 0;
               var maskFunc = QRUtil.getMaskFunction(maskPattern);
-
               for (var col = _moduleCount - 1; col > 0; col -= 2) {
-
                 if (col == 6) col -= 1;
-
                 while (true) {
-
                   for (var c = 0; c < 2; c += 1) {
-
                     if (_modules[row][col - c] == null) {
-
                       var dark = false;
-
                       if (byteIndex < data.length) {
                         dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
                       }
-
                       var mask = maskFunc(row, col - c);
-
                       if (mask) {
                         dark = !dark;
                       }
-
                       _modules[row][col - c] = dark;
                       bitIndex -= 1;
-
                       if (bitIndex == -1) {
                         byteIndex += 1;
                         bitIndex = 7;
                       }
                     }
                   }
-
                   row += inc;
-
                   if (row < 0 || _moduleCount <= row) {
                     row -= inc;
                     inc = -inc;
@@ -1071,35 +892,24 @@
                 }
               }
             };
-
             var createBytes = function(buffer, rsBlocks) {
-
               var offset = 0;
-
               var maxDcCount = 0;
               var maxEcCount = 0;
-
               var dcdata = new Array(rsBlocks.length);
               var ecdata = new Array(rsBlocks.length);
-
               for (var r = 0; r < rsBlocks.length; r += 1) {
-
                 var dcCount = rsBlocks[r].dataCount;
                 var ecCount = rsBlocks[r].totalCount - dcCount;
-
                 maxDcCount = Math.max(maxDcCount, dcCount);
                 maxEcCount = Math.max(maxEcCount, ecCount);
-
                 dcdata[r] = new Array(dcCount);
-
                 for (var i = 0; i < dcdata[r].length; i += 1) {
                   dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
                 }
                 offset += dcCount;
-
                 var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
                 var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
-
                 var modPoly = rawPoly.mod(rsPoly);
                 ecdata[r] = new Array(rsPoly.getLength() - 1);
                 for (var i = 0; i < ecdata[r].length; i += 1) {
@@ -1107,15 +917,12 @@
                   ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
                 }
               }
-
               var totalCodeCount = 0;
               for (var i = 0; i < rsBlocks.length; i += 1) {
                 totalCodeCount += rsBlocks[i].totalCount;
               }
-
               var data = new Array(totalCodeCount);
               var index = 0;
-
               for (var i = 0; i < maxDcCount; i += 1) {
                 for (var r = 0; r < rsBlocks.length; r += 1) {
                   if (i < dcdata[r].length) {
@@ -1124,7 +931,6 @@
                   }
                 }
               }
-
               for (var i = 0; i < maxEcCount; i += 1) {
                 for (var r = 0; r < rsBlocks.length; r += 1) {
                   if (i < ecdata[r].length) {
@@ -1133,29 +939,21 @@
                   }
                 }
               }
-
               return data;
             };
-
             var createData = function(typeNumber, errorCorrectionLevel, dataList) {
-
               var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
-
               var buffer = qrBitBuffer();
-
               for (var i = 0; i < dataList.length; i += 1) {
                 var data = dataList[i];
                 buffer.put(data.getMode(), 4);
                 buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
                 data.write(buffer);
               }
-
-              // calc num max data.
               var totalDataCount = 0;
               for (var i = 0; i < rsBlocks.length; i += 1) {
                 totalDataCount += rsBlocks[i].dataCount;
               }
-
               if (buffer.getLengthInBits() > totalDataCount * 8) {
                 throw 'code length overflow. ('
                   + buffer.getLengthInBits()
@@ -1163,40 +961,27 @@
                   + totalDataCount * 8
                   + ')';
               }
-
-              // end code
               if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
                 buffer.put(0, 4);
               }
-
-              // padding
               while (buffer.getLengthInBits() % 8 != 0) {
                 buffer.putBit(false);
               }
-
-              // padding
               while (true) {
-
                 if (buffer.getLengthInBits() >= totalDataCount * 8) {
                   break;
                 }
                 buffer.put(PAD0, 8);
-
                 if (buffer.getLengthInBits() >= totalDataCount * 8) {
                   break;
                 }
                 buffer.put(PAD1, 8);
               }
-
               return createBytes(buffer, rsBlocks);
             };
-
             _this.addData = function(data, mode) {
-
               mode = mode || 'Byte';
-
               var newData = null;
-
               switch(mode) {
               case 'Numeric' :
                 newData = qrNumber(data);
@@ -1213,85 +998,63 @@
               default :
                 throw 'mode:' + mode;
               }
-
               _dataList.push(newData);
               _dataCache = null;
             };
-
             _this.isDark = function(row, col) {
               if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
                 throw row + ',' + col;
               }
               return _modules[row][col];
             };
-
             _this.getModuleCount = function() {
               return _moduleCount;
             };
-
             _this.make = function() {
               if (_typeNumber < 1) {
                 var typeNumber = 1;
-
                 for (; typeNumber < 40; typeNumber++) {
                   var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
                   var buffer = qrBitBuffer();
-
                   for (var i = 0; i < _dataList.length; i++) {
                     var data = _dataList[i];
                     buffer.put(data.getMode(), 4);
                     buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
                     data.write(buffer);
                   }
-
                   var totalDataCount = 0;
                   for (var i = 0; i < rsBlocks.length; i++) {
                     totalDataCount += rsBlocks[i].dataCount;
                   }
-
                   if (buffer.getLengthInBits() <= totalDataCount * 8) {
                     break;
                   }
                 }
-
                 _typeNumber = typeNumber;
               }
-
               makeImpl(false, getBestMaskPattern() );
             };
-
             _this.createSvgTag = function(cellSize, margin, alt, title) {
-
               var opts = {};
               if (typeof arguments[0] == 'object') {
-                // Called by options.
                 opts = arguments[0];
-                // overwrite cellSize and margin.
                 cellSize = opts.cellSize;
                 margin = opts.margin;
                 alt = opts.alt;
                 title = opts.title;
               }
-
               cellSize = cellSize || 2;
               margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
-
-              // Compose alt property surrogate
               alt = (typeof alt === 'string') ? {text: alt} : alt || {};
               alt.text = alt.text || null;
               alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
-
-              // Compose title property surrogate
               title = (typeof title === 'string') ? {text: title} : title || {};
               title.text = title.text || null;
               title.id = (title.text) ? title.id || 'qrcode-title' : null;
-
               var size = _this.getModuleCount() * cellSize + margin * 2;
               var c, mc, r, mr, qrSvg='', rect;
-
               rect = 'l' + cellSize + ',0 0,' + cellSize +
                 ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
-
               qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
               qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
               qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
@@ -1305,7 +1068,6 @@
                   escapeXml(alt.text) + '</description>' : '';
               qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
               qrSvg += '<path d="';
-
               for (r = 0; r < _this.getModuleCount(); r += 1) {
                 mr = r * cellSize + margin;
                 for (c = 0; c < _this.getModuleCount(); c += 1) {
@@ -1315,10 +1077,8 @@
                   }
                 }
               }
-
               qrSvg += '" stroke="transparent" fill="black"/>';
               qrSvg += '</svg>';
-
               return qrSvg;
             };
             var escapeXml = function(s) {
@@ -1337,10 +1097,6 @@
             };
             return _this;
           };
-          //---------------------------------------------------------------------
-          // qrcode.stringToBytes
-          //---------------------------------------------------------------------
-
           qrcode.stringToBytesFuncs = {
             'default' : function(s) {
               var bytes = [];
@@ -1351,23 +1107,19 @@
               return bytes;
             }
           };
-
           qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
-
           var QRMode = {
             MODE_NUMBER :    1 << 0,
             MODE_ALPHA_NUM : 1 << 1,
             MODE_8BIT_BYTE : 1 << 2,
             MODE_KANJI :     1 << 3
           };
-
           var QRErrorCorrectionLevel = {
             L : 1,
             M : 0,
             Q : 3,
             H : 2
           };
-
           var QRMaskPattern = {
             PATTERN000 : 0,
             PATTERN001 : 1,
@@ -1378,9 +1130,7 @@
             PATTERN110 : 6,
             PATTERN111 : 7
           };
-
           var QRUtil = function() {
-
             var PATTERN_POSITION_TABLE = [
               [],
               [6, 18],
@@ -1426,9 +1176,7 @@
             var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
             var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
             var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
-
             var _this = {};
-
             var getBCHDigit = function(data) {
               var digit = 0;
               while (data != 0) {
@@ -1437,7 +1185,6 @@
               }
               return digit;
             };
-
             _this.getBCHTypeInfo = function(data) {
               var d = data << 10;
               while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
@@ -1445,7 +1192,6 @@
               }
               return ( (data << 10) | d) ^ G15_MASK;
             };
-
             _this.getBCHTypeNumber = function(data) {
               var d = data << 12;
               while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
@@ -1453,15 +1199,11 @@
               }
               return (data << 12) | d;
             };
-
             _this.getPatternPosition = function(typeNumber) {
               return PATTERN_POSITION_TABLE[typeNumber - 1];
             };
-
             _this.getMaskFunction = function(maskPattern) {
-
               switch (maskPattern) {
-
               case QRMaskPattern.PATTERN000 :
                 return function(i, j) { return (i + j) % 2 == 0; };
               case QRMaskPattern.PATTERN001 :
@@ -1478,12 +1220,10 @@
                 return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
               case QRMaskPattern.PATTERN111 :
                 return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
-
               default :
                 throw 'bad maskPattern:' + maskPattern;
               }
             };
-
             _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
               var a = qrPolynomial([1], 0);
               for (var i = 0; i < errorCorrectLength; i += 1) {
@@ -1491,13 +1231,8 @@
               }
               return a;
             };
-
             _this.getLengthInBits = function(mode, type) {
-
               if (1 <= type && type < 10) {
-
-                // 1 - 9
-
                 switch(mode) {
                 case QRMode.MODE_NUMBER    : return 10;
                 case QRMode.MODE_ALPHA_NUM : return 9;
@@ -1506,11 +1241,7 @@
                 default :
                   throw 'mode:' + mode;
                 }
-
               } else if (type < 27) {
-
-                // 10 - 26
-
                 switch(mode) {
                 case QRMode.MODE_NUMBER    : return 12;
                 case QRMode.MODE_ALPHA_NUM : return 11;
@@ -1519,11 +1250,7 @@
                 default :
                   throw 'mode:' + mode;
                 }
-
               } else if (type < 41) {
-
-                // 27 - 40
-
                 switch(mode) {
                 case QRMode.MODE_NUMBER    : return 14;
                 case QRMode.MODE_ALPHA_NUM : return 13;
@@ -1532,56 +1259,38 @@
                 default :
                   throw 'mode:' + mode;
                 }
-
               } else {
                 throw 'type:' + type;
               }
             };
-
             _this.getLostPoint = function(qrcode) {
-
               var moduleCount = qrcode.getModuleCount();
-
               var lostPoint = 0;
-
-              // LEVEL1
-
               for (var row = 0; row < moduleCount; row += 1) {
                 for (var col = 0; col < moduleCount; col += 1) {
-
                   var sameCount = 0;
                   var dark = qrcode.isDark(row, col);
-
                   for (var r = -1; r <= 1; r += 1) {
-
                     if (row + r < 0 || moduleCount <= row + r) {
                       continue;
                     }
-
                     for (var c = -1; c <= 1; c += 1) {
-
                       if (col + c < 0 || moduleCount <= col + c) {
                         continue;
                       }
-
                       if (r == 0 && c == 0) {
                         continue;
                       }
-
                       if (dark == qrcode.isDark(row + r, col + c) ) {
                         sameCount += 1;
                       }
                     }
                   }
-
                   if (sameCount > 5) {
                     lostPoint += (3 + sameCount - 5);
                   }
                 }
               };
-
-              // LEVEL2
-
               for (var row = 0; row < moduleCount - 1; row += 1) {
                 for (var col = 0; col < moduleCount - 1; col += 1) {
                   var count = 0;
@@ -1594,9 +1303,6 @@
                   }
                 }
               }
-
-              // LEVEL3
-
               for (var row = 0; row < moduleCount; row += 1) {
                 for (var col = 0; col < moduleCount - 6; col += 1) {
                   if (qrcode.isDark(row, col)
@@ -1610,7 +1316,6 @@
                   }
                 }
               }
-
               for (var col = 0; col < moduleCount; col += 1) {
                 for (var row = 0; row < moduleCount - 6; row += 1) {
                   if (qrcode.isDark(row, col)
@@ -1624,9 +1329,7 @@
                   }
                 }
               }
-
               var darkCount = 0;
-
               for (var col = 0; col < moduleCount; col += 1) {
                 for (var row = 0; row < moduleCount; row += 1) {
                   if (qrcode.isDark(row, col) ) {
@@ -1634,22 +1337,15 @@
                   }
                 }
               }
-
               var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
               lostPoint += ratio * 10;
-
               return lostPoint;
             };
-
             return _this;
           }();
-
           var QRMath = function() {
-
             var EXP_TABLE = new Array(256);
             var LOG_TABLE = new Array(256);
-
-            // initialize tables
             for (var i = 0; i < 8; i += 1) {
               EXP_TABLE[i] = 1 << i;
             }
@@ -1662,43 +1358,28 @@
             for (var i = 0; i < 255; i += 1) {
               LOG_TABLE[EXP_TABLE[i] ] = i;
             }
-
             var _this = {};
-
             _this.glog = function(n) {
-
               if (n < 1) {
                 throw 'glog(' + n + ')';
               }
-
               return LOG_TABLE[n];
             };
-
             _this.gexp = function(n) {
-
               while (n < 0) {
                 n += 255;
               }
-
               while (n >= 256) {
                 n -= 255;
               }
-
               return EXP_TABLE[n];
             };
-
             return _this;
           }();
-          //---------------------------------------------------------------------
-          // qrPolynomial
-          //---------------------------------------------------------------------
-
           function qrPolynomial(num, shift) {
-
             if (typeof num.length == 'undefined') {
               throw num.length + '/' + shift;
             }
-
             var _num = function() {
               var offset = 0;
               while (offset < num.length && num[offset] == 0) {
@@ -1710,315 +1391,209 @@
               }
               return _num;
             }();
-
             var _this = {};
-
             _this.getAt = function(index) {
               return _num[index];
             };
-
             _this.getLength = function() {
               return _num.length;
             };
-
             _this.multiply = function(e) {
-
               var num = new Array(_this.getLength() + e.getLength() - 1);
-
               for (var i = 0; i < _this.getLength(); i += 1) {
                 for (var j = 0; j < e.getLength(); j += 1) {
                   num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
                 }
               }
-
               return qrPolynomial(num, 0);
             };
-
             _this.mod = function(e) {
-
               if (_this.getLength() - e.getLength() < 0) {
                 return _this;
               }
-
               var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
-
               var num = new Array(_this.getLength() );
               for (var i = 0; i < _this.getLength(); i += 1) {
                 num[i] = _this.getAt(i);
               }
-
               for (var i = 0; i < e.getLength(); i += 1) {
                 num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
               }
-
-              // recursive call
               return qrPolynomial(num, 0).mod(e);
             };
-
             return _this;
           };
-
           var QRRSBlock = function() {
-
             var RS_BLOCK_TABLE = [
-
-              // L
-              // M
-              // Q
-              // H
-
-              // 1
               [1, 26, 19],
               [1, 26, 16],
               [1, 26, 13],
               [1, 26, 9],
-
-              // 2
               [1, 44, 34],
               [1, 44, 28],
               [1, 44, 22],
               [1, 44, 16],
-
-              // 3
               [1, 70, 55],
               [1, 70, 44],
               [2, 35, 17],
               [2, 35, 13],
-
-              // 4
               [1, 100, 80],
               [2, 50, 32],
               [2, 50, 24],
               [4, 25, 9],
-
-              // 5
               [1, 134, 108],
               [2, 67, 43],
               [2, 33, 15, 2, 34, 16],
               [2, 33, 11, 2, 34, 12],
-
-              // 6
               [2, 86, 68],
               [4, 43, 27],
               [4, 43, 19],
               [4, 43, 15],
-
-              // 7
               [2, 98, 78],
               [4, 49, 31],
               [2, 32, 14, 4, 33, 15],
               [4, 39, 13, 1, 40, 14],
-
-              // 8
               [2, 121, 97],
               [2, 60, 38, 2, 61, 39],
               [4, 40, 18, 2, 41, 19],
               [4, 40, 14, 2, 41, 15],
-
-              // 9
               [2, 146, 116],
               [3, 58, 36, 2, 59, 37],
               [4, 36, 16, 4, 37, 17],
               [4, 36, 12, 4, 37, 13],
-
-              // 10
               [2, 86, 68, 2, 87, 69],
               [4, 69, 43, 1, 70, 44],
               [6, 43, 19, 2, 44, 20],
               [6, 43, 15, 2, 44, 16],
-
-              // 11
               [4, 101, 81],
               [1, 80, 50, 4, 81, 51],
               [4, 50, 22, 4, 51, 23],
               [3, 36, 12, 8, 37, 13],
-
-              // 12
               [2, 116, 92, 2, 117, 93],
               [6, 58, 36, 2, 59, 37],
               [4, 46, 20, 6, 47, 21],
               [7, 42, 14, 4, 43, 15],
-
-              // 13
               [4, 133, 107],
               [8, 59, 37, 1, 60, 38],
               [8, 44, 20, 4, 45, 21],
               [12, 33, 11, 4, 34, 12],
-
-              // 14
               [3, 145, 115, 1, 146, 116],
               [4, 64, 40, 5, 65, 41],
               [11, 36, 16, 5, 37, 17],
               [11, 36, 12, 5, 37, 13],
-
-              // 15
               [5, 109, 87, 1, 110, 88],
               [5, 65, 41, 5, 66, 42],
               [5, 54, 24, 7, 55, 25],
               [11, 36, 12, 7, 37, 13],
-
-              // 16
               [5, 122, 98, 1, 123, 99],
               [7, 73, 45, 3, 74, 46],
               [15, 43, 19, 2, 44, 20],
               [3, 45, 15, 13, 46, 16],
-
-              // 17
               [1, 135, 107, 5, 136, 108],
               [10, 74, 46, 1, 75, 47],
               [1, 50, 22, 15, 51, 23],
               [2, 42, 14, 17, 43, 15],
-
-              // 18
               [5, 150, 120, 1, 151, 121],
               [9, 69, 43, 4, 70, 44],
               [17, 50, 22, 1, 51, 23],
               [2, 42, 14, 19, 43, 15],
-
-              // 19
               [3, 141, 113, 4, 142, 114],
               [3, 70, 44, 11, 71, 45],
               [17, 47, 21, 4, 48, 22],
               [9, 39, 13, 16, 40, 14],
-
-              // 20
               [3, 135, 107, 5, 136, 108],
               [3, 67, 41, 13, 68, 42],
               [15, 54, 24, 5, 55, 25],
               [15, 43, 15, 10, 44, 16],
-
-              // 21
               [4, 144, 116, 4, 145, 117],
               [17, 68, 42],
               [17, 50, 22, 6, 51, 23],
               [19, 46, 16, 6, 47, 17],
-
-              // 22
               [2, 139, 111, 7, 140, 112],
               [17, 74, 46],
               [7, 54, 24, 16, 55, 25],
               [34, 37, 13],
-
-              // 23
               [4, 151, 121, 5, 152, 122],
               [4, 75, 47, 14, 76, 48],
               [11, 54, 24, 14, 55, 25],
               [16, 45, 15, 14, 46, 16],
-
-              // 24
               [6, 147, 117, 4, 148, 118],
               [6, 73, 45, 14, 74, 46],
               [11, 54, 24, 16, 55, 25],
               [30, 46, 16, 2, 47, 17],
-
-              // 25
               [8, 132, 106, 4, 133, 107],
               [8, 75, 47, 13, 76, 48],
               [7, 54, 24, 22, 55, 25],
               [22, 45, 15, 13, 46, 16],
-
-              // 26
               [10, 142, 114, 2, 143, 115],
               [19, 74, 46, 4, 75, 47],
               [28, 50, 22, 6, 51, 23],
               [33, 46, 16, 4, 47, 17],
-
-              // 27
               [8, 152, 122, 4, 153, 123],
               [22, 73, 45, 3, 74, 46],
               [8, 53, 23, 26, 54, 24],
               [12, 45, 15, 28, 46, 16],
-
-              // 28
               [3, 147, 117, 10, 148, 118],
               [3, 73, 45, 23, 74, 46],
               [4, 54, 24, 31, 55, 25],
               [11, 45, 15, 31, 46, 16],
-
-              // 29
               [7, 146, 116, 7, 147, 117],
               [21, 73, 45, 7, 74, 46],
               [1, 53, 23, 37, 54, 24],
               [19, 45, 15, 26, 46, 16],
-
-              // 30
               [5, 145, 115, 10, 146, 116],
               [19, 75, 47, 10, 76, 48],
               [15, 54, 24, 25, 55, 25],
               [23, 45, 15, 25, 46, 16],
-
-              // 31
               [13, 145, 115, 3, 146, 116],
               [2, 74, 46, 29, 75, 47],
               [42, 54, 24, 1, 55, 25],
               [23, 45, 15, 28, 46, 16],
-
-              // 32
               [17, 145, 115],
               [10, 74, 46, 23, 75, 47],
               [10, 54, 24, 35, 55, 25],
               [19, 45, 15, 35, 46, 16],
-
-              // 33
               [17, 145, 115, 1, 146, 116],
               [14, 74, 46, 21, 75, 47],
               [29, 54, 24, 19, 55, 25],
               [11, 45, 15, 46, 46, 16],
-
-              // 34
               [13, 145, 115, 6, 146, 116],
               [14, 74, 46, 23, 75, 47],
               [44, 54, 24, 7, 55, 25],
               [59, 46, 16, 1, 47, 17],
-
-              // 35
               [12, 151, 121, 7, 152, 122],
               [12, 75, 47, 26, 76, 48],
               [39, 54, 24, 14, 55, 25],
               [22, 45, 15, 41, 46, 16],
-
-              // 36
               [6, 151, 121, 14, 152, 122],
               [6, 75, 47, 34, 76, 48],
               [46, 54, 24, 10, 55, 25],
               [2, 45, 15, 64, 46, 16],
-
-              // 37
               [17, 152, 122, 4, 153, 123],
               [29, 74, 46, 14, 75, 47],
               [49, 54, 24, 10, 55, 25],
               [24, 45, 15, 46, 46, 16],
-
-              // 38
               [4, 152, 122, 18, 153, 123],
               [13, 74, 46, 32, 75, 47],
               [48, 54, 24, 14, 55, 25],
               [42, 45, 15, 32, 46, 16],
-
-              // 39
               [20, 147, 117, 4, 148, 118],
               [40, 75, 47, 7, 76, 48],
               [43, 54, 24, 22, 55, 25],
               [10, 45, 15, 67, 46, 16],
-
-              // 40
               [19, 148, 118, 6, 149, 119],
               [18, 75, 47, 31, 76, 48],
               [34, 54, 24, 34, 55, 25],
               [20, 45, 15, 61, 46, 16]
             ];
-
             var qrRSBlock = function(totalCount, dataCount) {
               var _this = {};
               _this.totalCount = totalCount;
               _this.dataCount = dataCount;
               return _this;
             };
-
             var _this = {};
-
             var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
-
               switch(errorCorrectionLevel) {
               case QRErrorCorrectionLevel.L :
                 return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
@@ -2032,251 +1607,169 @@
                 return undefined;
               }
             };
-
             _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
-
               var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
-
               if (typeof rsBlock == 'undefined') {
                 throw 'bad rs block @ typeNumber:' + typeNumber +
                     '/errorCorrectionLevel:' + errorCorrectionLevel;
               }
-
               var length = rsBlock.length / 3;
-
               var list = [];
-
               for (var i = 0; i < length; i += 1) {
-
                 var count = rsBlock[i * 3 + 0];
                 var totalCount = rsBlock[i * 3 + 1];
                 var dataCount = rsBlock[i * 3 + 2];
-
                 for (var j = 0; j < count; j += 1) {
                   list.push(qrRSBlock(totalCount, dataCount) );
                 }
               }
-
               return list;
             };
-
             return _this;
           }();
-          //---------------------------------------------------------------------
-          // qrBitBuffer
-          //---------------------------------------------------------------------
-
           var qrBitBuffer = function() {
-
             var _buffer = [];
             var _length = 0;
-
             var _this = {};
-
             _this.getBuffer = function() {
               return _buffer;
             };
-
             _this.getAt = function(index) {
               var bufIndex = Math.floor(index / 8);
               return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
             };
-
             _this.put = function(num, length) {
               for (var i = 0; i < length; i += 1) {
                 _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
               }
             };
-
             _this.getLengthInBits = function() {
               return _length;
             };
-
             _this.putBit = function(bit) {
-
               var bufIndex = Math.floor(_length / 8);
               if (_buffer.length <= bufIndex) {
                 _buffer.push(0);
               }
-
               if (bit) {
                 _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
               }
-
               _length += 1;
             };
-
             return _this;
           };
-
           var qr8BitByte = function(data) {
-
             var _mode = QRMode.MODE_8BIT_BYTE;
             var _data = data;
             var _bytes = qrcode.stringToBytes(data);
-
             var _this = {};
-
             _this.getMode = function() {
               return _mode;
             };
-
             _this.getLength = function(buffer) {
               return _bytes.length;
             };
-
             _this.write = function(buffer) {
               for (var i = 0; i < _bytes.length; i += 1) {
                 buffer.put(_bytes[i], 8);
               }
             };
-
             return _this;
           };
-
           return qrcode;
         }();
     </script>
-
     <script>
-        /**
-         * RUNUP APP LOGIC
-         * Handles state, time calculation, UI binding, and cross-window sync.
-         */
-
-        // --- GLOBAL STATE ---
         const AppState = {
             segments: [],
             message: '',
             showMessage: false,
             messageBg: '#ffffff',
-            messageColor: '#000000'
+            messageColor: '#000000',
+            swapClock: false
         };
-
         const STORAGE_KEY = 'runup_app_state';
-
         function saveStateToStorage() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(AppState));
         }
-
         function loadStateFromStorage() {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
-                    // Fallback to parsed.schedules for older saves backwards compatibility
                     AppState.segments = parsed.segments || parsed.schedules || [];
                     AppState.message = parsed.message || '';
                     AppState.showMessage = parsed.showMessage || false;
                     AppState.messageBg = parsed.messageBg || '#ffffff';
                     AppState.messageColor = parsed.messageColor || '#000000';
+                    AppState.swapClock = parsed.swapClock || false;
                 } catch(e) {}
             }
         }
-
-        // Channel for local syncing between Program and local Live view windows
         const syncChannel = new BroadcastChannel('runup_sync_channel');
-        
-        // Mode detection
         const urlParams = new URLSearchParams(window.location.search);
         const isLiveView = urlParams.get('view') === 'live';
         const p2pRoomId = urlParams.get('room');
-
-        // --- P2P SERVERLESS SYNC (TRYSTERO) ---
-        // trickleIce: true sends ICE candidates incrementally instead of waiting for the full batch,
-        // which can shave time off the connection handshake (Trystero's torrent strategy defaults this to false).
         const P2P_CONFIG = { appId: 'rundown-timer-v1', trickleIce: true };
         const CONTROL_TOKEN_KEY = 'runup_control_token';
         let p2pRoom = null;
         let sendStateP2P = null;
         let sendCmdP2P = null;
-        // Viewer: token read from a "control-enabled" share link (null on a plain view-only link).
-        // Host: overwritten in initP2P() with the real per-room secret peers must present to be obeyed.
         let p2pControlToken = urlParams.get('ctrl');
-        const p2pPeers = new Set(); // host-side: peer IDs currently connected (drives the Share modal status line)
-
-        // --- HUMAN-READABLE ROOM NAMES ---
-        // cities.json is a plain array of Indonesian city names, kept as a separate file so it's
-        // easy to edit/extend by hand. Fetched as early as possible (page load) so it's most likely
-        // already loaded by the time the user clicks "Share Link". Falls back to generateRoomId()
-        // below if the file is missing, fails to load, or hasn't finished loading in time.
+        const p2pPeers = new Set(); 
         let cityNames = [];
         const cityNamesPromise = fetch('cities.json')
             .then(res => res.ok ? res.json() : Promise.reject(new Error('cities.json HTTP ' + res.status)))
             .then(list => { if (Array.isArray(list) && list.length) cityNames = list; })
             .catch(err => { console.warn('Could not load cities.json, room names will fall back to random IDs.', err); });
-
-        // Restore or mint the secret that gates control commands (Quick Next / Toggle Message) for a room.
-        // A view-only share link simply never receives this in its URL, so it can never present a valid token.
-        function ensureControlToken(roomId) {
+        async function ensureControlToken(roomId) {
             try {
                 const saved = JSON.parse(localStorage.getItem(CONTROL_TOKEN_KEY) || 'null');
                 if (saved && saved.roomId === roomId && saved.token) return saved.token;
             } catch(e) {}
-            const token = generateRoomId();
+            const token = await generateRoomName();
             try {
                 localStorage.setItem(CONTROL_TOKEN_KEY, JSON.stringify({ roomId, token }));
             } catch(e) {}
             return token;
         }
-
-        function initP2P(roomId) {
-            // Check if trystero is available (loaded via CDN)
+        async function initP2P(roomId) {
             if (!window.trystero) {
                 console.warn("Trystero not loaded. Retrying in 100ms...");
                 setTimeout(() => initP2P(roomId), 100);
                 return;
             }
-            
             console.log(`Initializing P2P Room: ${roomId}`);
             p2pRoom = trystero.joinRoom(P2P_CONFIG, roomId);
-            
-            // makeAction returns an action object: { send(data, [{target}]), onMessage, onReceiveProgress }
-            // (older Trystero returned a positional [send, get, onProgress] array - that shape no longer applies)
             const stateSync = p2pRoom.makeAction('stateSync');
             sendStateP2P = (data, peerId) => stateSync.send(data, peerId ? { target: peerId } : undefined);
-
             const cmdSync = p2pRoom.makeAction('cmdSync');
             sendCmdP2P = (data, peerId) => cmdSync.send(data, peerId ? { target: peerId } : undefined);
-
-            // --- HOST LOGIC ---
             if (!isLiveView) {
-                // Restore (or mint) the secret that gates Quick Next / Toggle Message from remote peers.
-                p2pControlToken = ensureControlToken(roomId);
-
-                // Listen for explicit commands or requests from viewers
+                p2pControlToken = await ensureControlToken(roomId);
                 cmdSync.onMessage = (data, meta) => {
                     const peerId = meta && meta.peerId;
                     console.log("Host received command:", data);
-                    // A peer's command is only obeyed if it presents the current room's control token.
-                    // A view-only share link never contains that token, so it can only ever REQUEST_STATE.
                     const isAuthorized = p2pControlToken && data.token === p2pControlToken;
                     if (data.type === 'COMMAND_QUICK_NEXT') { if (isAuthorized) els.btnQuickNext.click(); }
                     else if (data.type === 'COMMAND_TOGGLE_MSG') { if (isAuthorized) els.btnShowMsg.click(); }
+                    else if (data.type === 'COMMAND_TOGGLE_SWAP') { if (isAuthorized) els.btnSwapClock.click(); }
                     else if (data.type === 'REQUEST_STATE') {
-                        // Send state back specifically to the peer who asked
                         sendStateP2P(AppState, peerId);
                     }
                 };
-
-                // Backup proactively push state when a peer joins
                 p2pRoom.onPeerJoin = peerId => {
                     console.log("Peer joined, proactively sending state to:", peerId);
                     p2pPeers.add(peerId);
                     updateShareStatus();
                     sendStateP2P(AppState, peerId);
                 };
-
-                // Track disconnects too, so the Share modal status line stays accurate
                 p2pRoom.onPeerLeave = peerId => {
                     p2pPeers.delete(peerId);
                     updateShareStatus();
                 };
             }
-
-            // --- VIEWER LOGIC ---
             else {
-                // Listen for state updates from Host
                 let receivedState = false;
                 stateSync.onMessage = data => {
                     console.log("Viewer received state update");
@@ -2284,15 +1777,10 @@
                     els.lConnecting.classList.add('hidden');
                     updateLiveUIFromState(data);
                 };
-
-                // When joining, proactively request state from peers
                 p2pRoom.onPeerJoin = peerId => {
                      console.log("Found peer, requesting state from:", peerId);
                      sendCmdP2P({ type: 'REQUEST_STATE' }, peerId);
                 };
-
-                // Polling fallback to guarantee state payload gets received
-                // If it doesn't receive state within 2 seconds of peers existing, ask again
                 const requestInterval = setInterval(() => {
                     if (!receivedState && Object.keys(p2pRoom.getPeers()).length > 0) {
                          console.log("State not received yet, requesting again...");
@@ -2303,53 +1791,42 @@
                 }, 2000);
             }
         }
-
         function broadcastP2PState() {
             if (p2pRoom && !isLiveView && sendStateP2P) {
                 sendStateP2P(AppState);
             }
         }
-
-        // Reflects live P2P connection state in the Share modal
         function updateShareStatus() {
             const n = p2pPeers.size;
             els.shareStatus.textContent = n === 0
                 ? 'Waiting for a viewer to connect…'
                 : (n === 1 ? '1 viewer connected' : `${n} viewers connected`);
         }
-
-        // --- UTILS ---
         function timeToSeconds(timeStr) {
             if (!timeStr) return 0;
             const parts = timeStr.split(':').map(Number);
             return (parts[0] || 0) * 3600 + (parts[1] || 0) * 60 + (parts[2] || 0);
         }
-
         function secondsToTime(totalSeconds) {
             const isNeg = totalSeconds < 0;
             let s = Math.abs(totalSeconds);
-            s = s % 86400; // Enforce 24-hour wrap
+            s = s % 86400; 
             const h = Math.floor(s / 3600);
             const m = Math.floor((s % 3600) / 60);
             const sec = Math.floor(s % 60);
             const formatted = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
             return isNeg ? `-${formatted}` : formatted;
         }
-
         function getCurrentSeconds() {
             const now = new Date();
             return now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
         }
-
         function parseMarkdown(text) {
             if (!text) return '';
-            // Basic bold and italic parsing
             return text
                 .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
                 .replace(/\*(.*?)\*/g, '<i>$1</i>');
         }
-
-        // Calculate contrast color (black or white) dynamically based on background luminance
         function getContrastYIQ(hexcolor) {
             if (!hexcolor) return '#ffffff';
             hexcolor = hexcolor.replace("#", "");
@@ -2362,17 +1839,9 @@
             var yiq = ((r*299)+(g*587)+(b*114))/1000;
             return (yiq >= 128) ? '#000000' : '#ffffff';
         }
-
-        // Generate a random string for Room ID
         function generateRoomId() {
             return Math.random().toString(36).substring(2, 9);
         }
-
-        // Generate a human-readable Room ID from cities.json, e.g. "Jakarta" or "BandarLampung"
-        // (spaces stripped so the name is a clean URL query value). Waits briefly for cities.json
-        // to finish loading if it hasn't already; falls back to generateRoomId() if the list never
-        // loads. NOTE: plain city names are not unique - two hosts could pick the same city and land
-        // in the same room. This is an accepted trade-off for readability over collision-resistance.
         async function generateRoomName() {
             try {
                 await Promise.race([cityNamesPromise, new Promise(resolve => setTimeout(resolve, 500))]);
@@ -2383,12 +1852,8 @@
             }
             return generateRoomId();
         }
-
-        // --- NEW FEATURES UTILS ---
         function updateFadingDigits(el, newText) {
             if (el.textContent === newText) return;
-            
-            // Rebuild spans if empty or layout changed
             if (el.children.length !== newText.length || !el.firstElementChild?.classList.contains('digit')) {
                 el.innerHTML = '';
                 for (let i = 0; i < newText.length; i++) {
@@ -2399,19 +1864,16 @@
                 }
                 return;
             }
-            
-            // Check individual characters to prevent flickering
             for (let i = 0; i < newText.length; i++) {
                 const span = el.children[i];
                 if (span.textContent !== newText[i]) {
                     span.textContent = newText[i];
                     span.classList.remove('digit-fade');
-                    void span.offsetWidth; // Trigger reflow
+                    void span.offsetWidth; 
                     span.classList.add('digit-fade');
                 }
             }
         }
-
         function cascadeTimes(fromIndex = 1) {
             for (let i = fromIndex; i < AppState.segments.length; i++) {
                 if (i > 0) {
@@ -2420,19 +1882,13 @@
                 AppState.segments[i].end = secondsToTime(timeToSeconds(AppState.segments[i].start) + timeToSeconds(AppState.segments[i].duration));
             }
         }
-
-        // --- DOM ELEMENTS ---
         const els = {
             progView: document.getElementById('program-view'),
             liveView: document.getElementById('live-view'),
-            
-            // Program Display
             progDisplayArea: document.getElementById('prog-display-area'),
             pTitle: document.getElementById('prog-title'),
             pClock: document.getElementById('prog-clock'),
             pCountdown: document.getElementById('prog-countdown'),
-            
-            // Live Display
             lConnecting: document.getElementById('live-connecting'),
             lTitle: document.getElementById('live-title'),
             lClock: document.getElementById('live-clock'),
@@ -2442,8 +1898,6 @@
             lFooter: document.getElementById('live-footer'),
             lMsgContainer: document.getElementById('live-msg-container'),
             lMarquee: document.getElementById('live-marquee'),
-
-            // Controls
             tbody: document.getElementById('table-body'),
             msgInput: document.getElementById('message-input'),
             btnShowMsg: document.getElementById('btn-show-msg'),
@@ -2451,6 +1905,7 @@
             btnPresent: document.getElementById('btn-present'),
             btnShareLink: document.getElementById('btn-share-link'),
             btnQuickNext: document.getElementById('btn-quick-next'),
+            btnSwapClock: document.getElementById('btn-swap-clock'),
             btnAddRow: document.getElementById('btn-add-row'),
             btnEditorMode: document.getElementById('btn-editor-mode'),
             editorContainer: document.getElementById('editor-container'),
@@ -2459,49 +1914,30 @@
             btnLoad: document.getElementById('btn-load'),
             btnExport: document.getElementById('btn-export'),
             fileInput: document.getElementById('file-input'),
-
-            // Share Modal
             shareModal: document.getElementById('share-modal'),
             shareUrlInput: document.getElementById('share-url-input'),
             btnCopyUrl: document.getElementById('btn-copy-url'),
-            btnCloseModal: document.getElementById('btn-close-modal'),
             shareControlCheckbox: document.getElementById('share-control-checkbox'),
             shareStatus: document.getElementById('share-status'),
             shareQr: document.getElementById('share-qr'),
         };
-
         let lastActiveSegmentId = null;
-
-        // --- CORE CLOCK ENGINE ---
         function updateClockLoop() {
             const nowSecs = getCurrentSeconds();
             const nowTimeStr = secondsToTime(nowSecs);
-            
-            // Update document window title with live clock
             document.title = nowTimeStr + (isLiveView ? "" : " • RunDown");
-            
-            // Update physical clocks with fading transition
-            if (isLiveView) updateFadingDigits(els.lClock, nowTimeStr);
-            else updateFadingDigits(els.pClock, nowTimeStr);
-
-            // Determine current and next segment
             let currentSegment = null;
             let nextSegment = null;
             let currentCountdown = 0;
-
             for (let i = 0; i < AppState.segments.length; i++) {
                 const seg = AppState.segments[i];
                 const startSec = timeToSeconds(seg.start);
                 let endSec = timeToSeconds(seg.end);
-
-                // Cross-midnight handling
                 if (endSec <= startSec) endSec += 86400;
-                
                 let effNowSec = nowSecs;
                 if (endSec > 86400 && nowSecs < (endSec - 86400)) {
                     effNowSec += 86400;
                 }
-
                 if (effNowSec >= startSec && effNowSec < endSec) {
                     currentSegment = seg;
                     currentCountdown = endSec - effNowSec;
@@ -2510,26 +1946,28 @@
                     }
                     break;
                 } else if (startSec > effNowSec && !currentSegment && !nextSegment) {
-                    // Found the first upcoming segment if none is currently active
                     nextSegment = seg;
                 }
             }
-
-            // Trigger Swipe-up Animation on segment change
+            const swapActive = !!(AppState.swapClock && currentSegment);
+            const countdownStr = secondsToTime(currentCountdown);
+            const clockSlotText = swapActive ? countdownStr : nowTimeStr;
+            const countdownSlotText = swapActive ? nowTimeStr : countdownStr;
+            if (isLiveView) updateFadingDigits(els.lClock, clockSlotText);
+            else updateFadingDigits(els.pClock, clockSlotText);
             if (currentSegment?.id !== lastActiveSegmentId) {
                 lastActiveSegmentId = currentSegment?.id;
-                [els.lTitle, els.pTitle, els.lCountdown, els.pCountdown].forEach(el => {
+                const liveCountdownSlot = swapActive ? els.lClock : els.lCountdown;
+                const progCountdownSlot = swapActive ? els.pClock : els.pCountdown;
+                [els.lTitle, els.pTitle, liveCountdownSlot, progCountdownSlot].forEach(el => {
                     el.classList.remove('swipe-up');
-                    void el.offsetWidth; // Trigger reflow
+                    void el.offsetWidth; 
                     el.classList.add('swipe-up');
                 });
             }
-
-            // Apply background colors dynamically to the entire view body based on current segment
             const defaultBg = '#0a0a0a';
             const activeColor = currentSegment && currentSegment.color ? currentSegment.color : defaultBg;
             const contrastColor = getContrastYIQ(activeColor);
-            
             if (isLiveView) {
                 els.liveView.style.backgroundColor = activeColor;
                 els.liveView.style.color = contrastColor;
@@ -2537,22 +1975,19 @@
                 els.progView.style.backgroundColor = activeColor;
                 els.progView.style.color = contrastColor;
             }
-
-            // Render Info based on View
             if (isLiveView) {
                 if (currentSegment) {
                     els.lTitle.textContent = currentSegment.title;
                     els.lTitle.classList.remove('invisible');
-                    updateFadingDigits(els.lCountdown, secondsToTime(currentCountdown));
+                    updateFadingDigits(els.lCountdown, countdownSlotText);
                     els.lCountdown.classList.remove('invisible');
                 } else {
                     els.lTitle.classList.add('invisible');
                     els.lCountdown.classList.add('invisible');
                 }
-
                 if (nextSegment) {
                     els.lNextTitle.textContent = nextSegment.title;
-                    els.lNextTime.textContent = nextSegment.start.substring(0, 5); // HH:mm
+                    els.lNextTime.textContent = nextSegment.start.substring(0, 5); 
                     els.lFooter.classList.remove('hidden');
                 } else {
                     els.lFooter.classList.add('hidden');
@@ -2561,38 +1996,33 @@
                 if (currentSegment) {
                     els.pTitle.textContent = currentSegment.title;
                     els.pTitle.classList.remove('invisible');
-                    updateFadingDigits(els.pCountdown, secondsToTime(currentCountdown));
+                    updateFadingDigits(els.pCountdown, countdownSlotText);
                     els.pCountdown.classList.remove('invisible');
                 } else {
                     els.pTitle.classList.add('invisible');
                     els.pCountdown.classList.add('invisible');
                 }
-
-                // Hide quick next if there's no upcoming segment
                 if (nextSegment) {
                     els.btnQuickNext.classList.remove('invisible');
                 } else {
                     els.btnQuickNext.classList.add('invisible');
                 }
+                if (currentSegment) {
+                    els.btnSwapClock.classList.remove('invisible');
+                } else {
+                    els.btnSwapClock.classList.add('invisible');
+                }
             }
-
             requestAnimationFrame(updateClockLoop);
         }
-
-
-        // --- PROGRAM VIEW LOGIC (Controls) ---
-
         function renderTable() {
             els.tbody.innerHTML = '';
             AppState.segments.forEach((seg, index) => {
                 const tr = document.createElement('tr');
                 tr.draggable = true;
                 tr.dataset.index = index;
-                
-                // Enforce start time contiguity
                 const isReadonly = index > 0 ? 'readonly tabindex="-1"' : '';
                 const roClass = index > 0 ? 'readonly-input' : '';
-
                 tr.innerHTML = `
                     <td><input type="time" step="1" lang="en-GB" class="table-input time-input start-input ${roClass}" value="${seg.start}" ${isReadonly} title="${index > 0 ? 'Auto-calculated sequence' : ''}"></td>
                     <td><input type="time" step="1" lang="en-GB" class="table-input time-input end-input" value="${seg.end}"></td>
@@ -2608,35 +2038,24 @@
                 `;
                 els.tbody.appendChild(tr);
             });
-            
-            // Hide export button if no segments
             if (AppState.segments.length === 0) {
                 els.btnExport.classList.add('hidden');
             } else {
                 els.btnExport.classList.remove('hidden');
             }
-            
             attachTableListeners();
         }
-
         function broadcastState() {
             saveStateToStorage();
-            
-            // Local broadcast channel sync
             syncChannel.postMessage({
                 type: 'STATE_UPDATE',
                 payload: AppState
             });
-            
-            // P2P Internet sync
             broadcastP2PState();
         }
-
         function handleDataChange(index, field, value) {
             const seg = AppState.segments[index];
             seg[field] = value;
-
-            // Auto-calculate logic with cascading
             if (field === 'start') {
                 seg.end = secondsToTime(timeToSeconds(seg.start) + timeToSeconds(seg.duration));
                 cascadeTimes(index + 1);
@@ -2646,43 +2065,33 @@
             } else if (field === 'end') {
                 let endSecs = timeToSeconds(seg.end);
                 let startSecs = timeToSeconds(seg.start);
-                if (endSecs < startSecs) endSecs += 86400; // Cross-midnight adjustment
+                if (endSecs < startSecs) endSecs += 86400; 
                 seg.duration = secondsToTime(endSecs - startSecs);
                 cascadeTimes(index + 1);
             }
-            
-            // We do not re-render full table on color change so the input doesn't lose focus while dragging picker
             if (field !== 'color') {
                 renderTable();
             }
-            
             broadcastState();
         }
-
         function attachTableListeners() {
-            // Input changes
             els.tbody.querySelectorAll('tr').forEach((tr, index) => {
                 const startIn = tr.querySelector('.start-input');
                 const endIn = tr.querySelector('.end-input');
                 const titleIn = tr.querySelector('.title-input');
                 const durIn = tr.querySelector('.duration-input');
                 const colorIn = tr.querySelector('.color-input');
-
                 startIn.addEventListener('change', (e) => handleDataChange(index, 'start', e.target.value));
                 endIn.addEventListener('change', (e) => handleDataChange(index, 'end', e.target.value));
                 titleIn.addEventListener('change', (e) => handleDataChange(index, 'title', e.target.value));
                 durIn.addEventListener('change', (e) => handleDataChange(index, 'duration', e.target.value));
                 colorIn.addEventListener('input', (e) => handleDataChange(index, 'color', e.target.value));
-
-                // Delete
                 tr.querySelector('.delete-btn').addEventListener('click', () => {
                     AppState.segments.splice(index, 1);
                     renderTable();
                     broadcastState();
                 });
             });
-
-            // Drag and Drop implementation
             let draggedRow = null;
             els.tbody.addEventListener('dragstart', (e) => {
                 if(e.target.tagName === 'TR') {
@@ -2690,25 +2099,20 @@
                     e.target.classList.add('dragging');
                 }
             });
-            
             els.tbody.addEventListener('dragend', (e) => {
                 if(e.target.tagName === 'TR') {
                     e.target.classList.remove('dragging');
-                    // Rebuild array based on DOM order
                     const newSegments = [];
                     els.tbody.querySelectorAll('tr').forEach(tr => {
                         const oldIdx = tr.dataset.index;
                         newSegments.push(AppState.segments[oldIdx]);
                     });
                     AppState.segments = newSegments;
-                    
-                    cascadeTimes(1); // Recalculate sequentially
-                    
+                    cascadeTimes(1); 
                     renderTable();
                     broadcastState();
                 }
             });
-
             els.tbody.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 const targetRow = e.target.closest('tr');
@@ -2719,9 +2123,7 @@
                 }
             });
         }
-
         function setupProgramControls() {
-            // Add Row
             els.btnAddRow.addEventListener('click', () => {
                 let lastEnd = "12:00:00";
                 if (AppState.segments.length > 0) {
@@ -2739,8 +2141,6 @@
                 renderTable();
                 broadcastState();
             });
-
-            // Quick Next Logic: End current segment now, pull next segment start to now.
             els.btnQuickNext.addEventListener('click', () => {
                 const nowSecs = getCurrentSeconds();
                 let currentIndex = AppState.segments.findIndex(s => {
@@ -2751,22 +2151,16 @@
                     if (eSec > 86400 && nSec < (eSec - 86400)) nSec += 86400;
                     return sSec <= nSec && eSec > nSec;
                 });
-                
                 if (currentIndex !== -1 && currentIndex < AppState.segments.length - 1) {
-                    // Truncate current based on time
                     AppState.segments[currentIndex].end = secondsToTime(nowSecs);
-                    
                     let sSec = timeToSeconds(AppState.segments[currentIndex].start);
                     let nSec = nowSecs;
-                    if (nSec < sSec) nSec += 86400; // Cross-midnight edge case
+                    if (nSec < sSec) nSec += 86400; 
                     AppState.segments[currentIndex].duration = secondsToTime(nSec - sSec);
-                    
-                    // Cascade updates everything after
                     cascadeTimes(currentIndex + 1);
                     renderTable();
                     broadcastState();
                 } else if (currentIndex === -1 && AppState.segments.length > 0) {
-                    // If before the first segment, snap the first one to NOW
                     const firstStart = timeToSeconds(AppState.segments[0].start);
                     if (nowSecs < firstStart) {
                         AppState.segments[0].start = secondsToTime(nowSecs);
@@ -2777,12 +2171,9 @@
                     }
                 }
             });
-
-            // Message Toggle
             els.btnShowMsg.addEventListener('click', () => {
                 AppState.showMessage = !AppState.showMessage;
                 AppState.message = els.msgInput.value;
-                
                 if (AppState.showMessage) {
                     els.btnShowMsg.textContent = "HIDE";
                     els.btnShowMsg.classList.add('active');
@@ -2792,39 +2183,28 @@
                 }
                 broadcastState();
             });
-
-            // Color Presets Selection
             els.colorPresets.forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     els.colorPresets.forEach(b => b.classList.remove('active'));
                     const target = e.currentTarget;
                     target.classList.add('active');
-                    
                     AppState.messageBg = target.dataset.bg;
                     AppState.messageColor = target.dataset.color;
-                    
                     if (!isLiveView) {
                         els.msgInput.style.backgroundColor = AppState.messageBg;
                         els.msgInput.style.color = AppState.messageColor;
                     }
-                    
-                    // Live update if message is currently shown
                     if (AppState.showMessage) broadcastState();
                 });
             });
-
-            // Message Input Realtime Sync (Optional, but good if SHOW is active)
             els.msgInput.addEventListener('input', () => {
                 AppState.message = els.msgInput.value;
                 if (AppState.showMessage) broadcastState();
             });
-            
-            // Editor Mode Logic
             let isEditorMode = false;
             els.btnEditorMode.addEventListener('click', () => {
                 isEditorMode = !isEditorMode;
                 const headerLine = "Start | End | Segment | Duration | Color Hex";
-                
                 if (isEditorMode) {
                     const lines = [headerLine, ...AppState.segments.map(s => `${s.start} | ${s.end} | ${s.title} | ${s.duration} | ${s.color || '#0a0a0a'}`)];
                     els.rawEditor.value = lines.join('\n');
@@ -2839,9 +2219,7 @@
                     const lines = text.split('\n').filter(l => l.trim().length > 0);
                     const newSegments = [];
                     lines.forEach(line => {
-                        // Skip the header line on parsing
                         if (line.toLowerCase().includes('start |') && line.toLowerCase().includes('end |')) return; 
-                        
                         const parts = line.split('|').map(p => p.trim());
                         if (parts.length >= 4) {
                             newSegments.push({ 
@@ -2858,7 +2236,6 @@
                     cascadeTimes(1);
                     renderTable();
                     broadcastState();
-                    
                     els.tableResponsive.classList.remove('hidden');
                     els.editorContainer.classList.add('hidden');
                     els.btnEditorMode.textContent = "RAW EDITOR";
@@ -2867,8 +2244,6 @@
                     els.btnAddRow.classList.remove('hidden');
                 }
             });
-
-            // File IO
             els.btnExport.addEventListener('click', () => {
                 const headerLine = "Start | End | Segment | Duration | Color Hex";
                 const lines = [headerLine, ...AppState.segments.map(s => `${s.start} | ${s.end} | ${s.title} | ${s.duration} | ${s.color || '#0a0a0a'}`)];
@@ -2880,9 +2255,7 @@
                 a.click();
                 URL.revokeObjectURL(url);
             });
-
             els.btnLoad.addEventListener('click', () => els.fileInput.click());
-            
             els.fileInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -2892,9 +2265,7 @@
                     const lines = text.split('\n').filter(l => l.trim().length > 0);
                     const newSegments = [];
                     lines.forEach(line => {
-                        // Skip the header line on parsing
                         if (line.toLowerCase().includes('start |') && line.toLowerCase().includes('end |')) return; 
-
                         const parts = line.split('|').map(p => p.trim());
                         if (parts.length >= 4) {
                             newSegments.push({ 
@@ -2903,27 +2274,23 @@
                                 end: parts[1], 
                                 title: parts[2], 
                                 duration: parts[3],
-                                color: parts[4] || '#0a0a0a' // Fallback for files saved prior to color update
+                                color: parts[4] || '#0a0a0a' 
                             });
                         }
                     });
                     if(newSegments.length > 0) {
                         AppState.segments = newSegments;
-                        cascadeTimes(1); // Enforce contiguity on load
+                        cascadeTimes(1); 
                         renderTable();
                         broadcastState();
                     }
                 };
                 reader.readAsText(file);
-                els.fileInput.value = ''; // reset
+                els.fileInput.value = ''; 
             });
-
-            // Render `url` as a scannable QR code into the Share modal. Uses the vendored
-            // `qrcode` encoder (see the <script> block above the app logic). Always drawn
-            // black-on-white regardless of app theme, since that's what phone cameras expect.
             function renderShareQr(url) {
                 try {
-                    const qr = qrcode(0, 'M'); // typeNumber 0 = auto-size to fit the data
+                    const qr = qrcode(0, 'M'); 
                     qr.addData(url);
                     qr.make();
                     els.shareQr.innerHTML = qr.createSvgTag(4, 12);
@@ -2932,30 +2299,25 @@
                     els.shareQr.innerHTML = '';
                 }
             }
-
-            // Share Link Button & Modal
+            els.btnSwapClock.addEventListener('click', () => {
+                AppState.swapClock = !AppState.swapClock;
+                els.btnSwapClock.classList.toggle('active', AppState.swapClock);
+                broadcastState();
+            });
             els.btnShareLink.addEventListener('click', async () => {
                 let rId = p2pRoomId;
                 if (!rId) {
                     rId = await generateRoomName();
-                    
-                    // Handle blob origin securely for history.replaceState
                     if (window.location.protocol !== 'blob:') {
                         const newUrl = new URL(window.location.href);
                         newUrl.searchParams.set('room', rId);
                         window.history.replaceState({}, '', newUrl);
                     } else {
-                        // For blob: origins in dev environments, we just generate the URL string
                     }
-                    
-                    // Initialize P2P Host with the new room
-                    initP2P(rId);
+                    await initP2P(rId);
                 }
-                
-                // Construct shareable link securely avoiding blob: URL in output
                 let shareUrl = window.location.href;
                 if (window.location.protocol === 'blob:') {
-                    // Fallback dummy for blob environment
                     shareUrl = `https://rundown.app/?room=${rId}&view=live`;
                 } else {
                     const u = new URL(window.location.href);
@@ -2963,21 +2325,15 @@
                     u.searchParams.set('view', 'live');
                     shareUrl = u.toString();
                 }
-
-                // Optionally append the control token so this link can also drive Quick Next / Toggle Message.
-                // Left unchecked, the link stays view-only since it never receives this secret.
                 if (els.shareControlCheckbox.checked && p2pControlToken) {
                     shareUrl += (shareUrl.includes('?') ? '&' : '?') + 'ctrl=' + encodeURIComponent(p2pControlToken);
                 }
-
                 els.shareUrlInput.value = shareUrl;
                 renderShareQr(shareUrl);
                 els.btnCopyUrl.textContent = "COPY";
                 updateShareStatus();
                 els.shareModal.classList.add('active');
             });
-
-            // Live-update the link when the control-access checkbox is toggled, without needing to re-click Share Link
             els.shareControlCheckbox.addEventListener('change', () => {
                 const u = new URL(els.shareUrlInput.value);
                 if (els.shareControlCheckbox.checked && p2pControlToken) {
@@ -2988,38 +2344,28 @@
                 els.shareUrlInput.value = u.toString();
                 renderShareQr(u.toString());
             });
-
             els.btnCopyUrl.addEventListener('click', () => {
                 els.shareUrlInput.select();
                 els.shareUrlInput.setSelectionRange(0, 99999);
                 navigator.clipboard.writeText(els.shareUrlInput.value);
                 els.btnCopyUrl.textContent = "COPIED!";
             });
-
-            els.btnCloseModal.addEventListener('click', () => {
-                els.shareModal.classList.remove('active');
+            els.shareModal.addEventListener('click', (e) => {
+                if (e.target === els.shareModal) {
+                    els.shareModal.classList.remove('active');
+                }
             });
-
-            // Present Button (Open Popup locally)
             els.btnPresent.addEventListener('click', () => {
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.set('view', 'live');
-                // Open new window. Browsers usually allow this on user interaction.
                 window.open(currentUrl.href, 'RunDownLiveWindow', 'width=1280,height=720,menubar=no,toolbar=no,location=no,status=no');
-                
-                // Ensure current state is broadcasted slightly after open to sync
                 setTimeout(broadcastState, 1000); 
             });
         }
-
-        // --- KEYBOARD SHORTCUTS ---
         window.addEventListener('keydown', (e) => {
-            // Check if window is active
             if (!document.hasFocus()) return;
-            // Check if user is typing in an input field
             const activeTag = document.activeElement ? document.activeElement.tagName : '';
             if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
-
             switch (e.key.toLowerCase()) {
                 case 'q':
                     e.preventDefault();
@@ -3043,38 +2389,35 @@
                         els.btnShowMsg.click();
                     }
                     break;
+                case 's':
+                    e.preventDefault();
+                    if (isLiveView) {
+                        syncChannel.postMessage({ type: 'COMMAND_TOGGLE_SWAP' });
+                        if(sendCmdP2P) sendCmdP2P({ type: 'COMMAND_TOGGLE_SWAP', token: p2pControlToken });
+                    } else {
+                        els.btnSwapClock.click();
+                    }
+                    break;
             }
         });
-
-        // --- LIVE VIEW LOGIC (Receiver) ---
-        
         function updateLiveUIFromState(state) {
             AppState.segments = state.segments;
-            
+            AppState.swapClock = !!state.swapClock;
             if (state.showMessage && state.message.trim() !== '') {
                 els.lMsgContainer.classList.add('msg-visible');
-                
-                // Apply color states
                 els.lMsgContainer.style.backgroundColor = state.messageBg || '#b10000';
                 els.lMsgContainer.style.color = state.messageColor || '#ffffff';
-
-                // Only parse/update if changed to avoid breaking marquee mid-scroll
                 if (els.lMarquee.dataset.raw !== state.message) {
                     els.lMarquee.dataset.raw = state.message;
                     els.lMarquee.innerHTML = parseMarkdown(state.message);
-                    
-                    // Reset animation states to measure width
                     els.lMarquee.className = 'marquee-content static-measure';
                     els.lMarquee.style.animation = 'none';
-                    
-                    // Measure and apply proper class next frame
                     requestAnimationFrame(() => {
                         const containerWidth = els.lMsgContainer.clientWidth;
                         const textWidth = els.lMarquee.scrollWidth;
-                        
                         if (textWidth > containerWidth) {
                             els.lMarquee.className = 'marquee-content marquee-active';
-                            els.lMarquee.style.animation = ''; // Restore CSS animation
+                            els.lMarquee.style.animation = ''; 
                         } else {
                             els.lMarquee.className = 'marquee-content marquee-static';
                         }
@@ -3084,53 +2427,34 @@
                 els.lMsgContainer.classList.remove('msg-visible');
             }
         }
-
-        // --- INITIALIZATION ---
-        
         function initApp() {
             if (isLiveView) {
-                // Setup Live View
                 document.title = "RunDown - LIVE";
                 els.progView.classList.add('hidden');
                 els.liveView.classList.remove('hidden');
-                els.liveView.style.display = 'flex'; // override default
-                
-                // Listen for local sync
+                els.liveView.style.display = 'flex'; 
                 syncChannel.onmessage = (event) => {
                     if (event.data.type === 'STATE_UPDATE') {
                         els.lConnecting.classList.add('hidden');
                         updateLiveUIFromState(event.data.payload);
                     }
                 };
-
-                // Initialize P2P if room ID present in URL (Viewers joining via link)
                 if (p2pRoomId) {
-                    // Show a "connecting" badge until the first P2P state payload arrives -
-                    // otherwise this just looks like a blank/idle screen while the handshake completes.
                     els.lConnecting.classList.remove('hidden');
                     initP2P(p2pRoomId);
                 } else {
-                    // Only request local state if not P2P
                     syncChannel.postMessage({ type: 'REQUEST_STATE' });
                 }
-                
             } else {
-                // Setup Program View
                 loadStateFromStorage();
-                
-                // Initialize P2P Host if room ID present from a previous session reload
                 if (p2pRoomId) {
                     initP2P(p2pRoomId);
                 }
-                
-                // Init message box state
                 els.msgInput.value = AppState.message;
                 if (AppState.showMessage) {
                     els.btnShowMsg.textContent = "HIDE";
                     els.btnShowMsg.classList.add('active');
                 }
-
-                // Init color presets state
                 let hasActiveColor = false;
                 els.colorPresets.forEach(btn => {
                     if (btn.dataset.bg === AppState.messageBg) {
@@ -3140,22 +2464,19 @@
                         btn.classList.remove('active');
                     }
                 });
-                // Fallback if no matching preset (Defaults to White)
                 if (!hasActiveColor && els.colorPresets.length > 0) {
                     const whiteBtn = Array.from(els.colorPresets).find(b => b.dataset.bg === '#ffffff') || els.colorPresets[0];
                     whiteBtn.classList.add('active');
                     AppState.messageBg = whiteBtn.dataset.bg;
                     AppState.messageColor = whiteBtn.dataset.color;
                 }
-                
-                // Apply color to message input
                 els.msgInput.style.backgroundColor = AppState.messageBg;
                 els.msgInput.style.color = AppState.messageColor;
-
+                if (AppState.swapClock) {
+                    els.btnSwapClock.classList.add('active');
+                }
                 renderTable();
                 setupProgramControls();
-                
-                // Listen for requests from newly opened local live windows
                 syncChannel.onmessage = (event) => {
                     if (event.data.type === 'REQUEST_STATE') {
                         broadcastState();
@@ -3163,18 +2484,14 @@
                         els.btnQuickNext.click();
                     } else if (event.data.type === 'COMMAND_TOGGLE_MSG') {
                         els.btnShowMsg.click();
+                    } else if (event.data.type === 'COMMAND_TOGGLE_SWAP') {
+                        els.btnSwapClock.click();
                     }
                 };
-                
-                // Initial broadcast
                 broadcastState();
             }
-
-            // Start clock engine
             requestAnimationFrame(updateClockLoop);
         }
-
-        // Boot
         initApp();
     </script>
 </body>

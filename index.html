@@ -33,10 +33,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;1,200;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
-    <script type="module">
-        import { joinRoom } from 'https://cdn.jsdelivr.net/npm/@trystero-p2p/torrent@0.25.3/+esm';
-        window.trystero = { joinRoom };
-    </script>
     <style>
         :root {
             --bg-dark: rgba(0,0,0,.5);
@@ -505,6 +501,41 @@
             70% { box-shadow: 0 0 0 6px rgba(255, 158, 0, 0); }
             100% { box-shadow: 0 0 0 0 rgba(255, 158, 0, 0); }
         }
+        .share-conn-banner {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .5px;
+            text-align: center;
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid currentColor;
+        }
+        .share-conn-banner .pulse-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin-top: -2px;
+            margin-right: 8px;
+            border-radius: 50%;
+            vertical-align: middle;
+        }
+        .share-conn-banner.state-connecting {
+            color: #ff9e00;
+            background-color: rgba(255,158,0,0.12);
+        }
+        .share-conn-banner.state-connecting .pulse-dot {
+            background-color: #ff9e00;
+            animation: pulseDot 1.4s ease-in-out infinite;
+        }
+        .share-conn-banner.state-error,
+        .share-conn-banner.state-limit {
+            color: var(--accent-red);
+            background-color: rgba(177,0,0,0.1);
+        }
+        .share-conn-banner.state-error .pulse-dot,
+        .share-conn-banner.state-limit .pulse-dot {
+            background-color: var(--accent-red);
+        }
         .live-message-banner {
             background-color: var(--accent-red);
             color: white;
@@ -609,7 +640,7 @@
     <div id="program-view" class="view-container">
         <div id="prog-display-area" class="prog-display-area">
             <div class="prog-header">
-                <div class="logo">Run<strong>Down</strong><span class="version">v2026.08.24.1424</span></div>
+                <div class="logo">Run<strong>Down</strong><span class="version">v2026.08.28.1725</span></div>
                 <div class="credit">Codecrafted by <a href="https://stefanus.hosea.id" target="_blank"><strong>Stefanus Hosea</strong></a></div>
             </div>
             <div class="prog-main-clock">
@@ -712,6 +743,7 @@
             <div class="share-qr-wrap">
                 <div id="share-qr" class="share-qr"></div>
             </div>
+            <div id="share-conn-banner" class="share-conn-banner hidden"><span class="pulse-dot"></span><span id="share-conn-text"></span></div>
             <div id="share-status" class="modal-desc">Waiting for a viewer to connect…</div>
             <div class="modal-actions">
                 <button id="btn-copy-url" class="pill-btn outline">COPY</button>
@@ -1709,14 +1741,17 @@
         const syncChannel = new BroadcastChannel('runup_sync_channel');
         const urlParams = new URLSearchParams(window.location.search);
         const isLiveView = urlParams.get('view') === 'live';
+        const isPresentPopup = urlParams.get('present') === '1';
         const p2pRoomId = urlParams.get('room');
-        const P2P_CONFIG = { appId: 'rundown-timer-v1', trickleIce: true };
         const CONTROL_TOKEN_KEY = 'runup_control_token';
-        let p2pRoom = null;
         let sendStateP2P = null;
         let sendCmdP2P = null;
         let p2pControlToken = urlParams.get('ctrl');
-        const p2pPeers = new Set(); 
+        const p2pPeers = new Set();
+        const SUPABASE_URL = 'https://umzygeexzkqvafipkmdy.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_dBv9oRXTvn3MGxmUbWjczA_nTBppo2N';
+        let supabaseClient = null;
+        let sbChannel = null;
         let cityNames = [];
         const cityNamesPromise = fetch('cities.json')
             .then(res => res.ok ? res.json() : Promise.reject(new Error('cities.json HTTP ' + res.status)))
@@ -1738,74 +1773,93 @@
             } catch(e) {}
             return token;
         }
-        async function initP2P(roomId) {
-            if (!window.trystero) {
-                console.warn("Trystero not loaded. Retrying in 100ms...");
-                setTimeout(() => initP2P(roomId), 100);
+        function updateShareStatus() {
+            const n = p2pPeers.size;
+            els.shareStatus.textContent = n === 0
+                ? 'Waiting for a viewer to connect…'
+                : (n === 1 ? '1 viewer connected' : `${n} viewers connected`);
+        }
+        function updateShareBanner(state, detail) {
+            if (!els.shareConnBanner) return;
+            els.shareConnBanner.classList.remove('state-connecting', 'state-error', 'state-limit');
+            if (state === 'connected') {
+                els.shareConnBanner.classList.add('hidden');
                 return;
             }
-            console.log(`Initializing P2P Room: ${roomId}`);
-            p2pRoom = trystero.joinRoom(P2P_CONFIG, roomId);
-            const stateSync = p2pRoom.makeAction('stateSync');
-            sendStateP2P = (data, peerId) => stateSync.send(data, peerId ? { target: peerId } : undefined);
-            const cmdSync = p2pRoom.makeAction('cmdSync');
-            sendCmdP2P = (data, peerId) => cmdSync.send(data, peerId ? { target: peerId } : undefined);
+            els.shareConnBanner.classList.remove('hidden');
+            els.shareConnBanner.classList.add('state-' + state);
+            els.shareConnText.textContent = detail || (
+                state === 'connecting' ? 'Connecting to live sync…' :
+                state === 'limit' ? 'Viewer limit reached — try again shortly' :
+                "Can't reach live sync — check your Supabase project isn't paused or offline"
+            );
+        }
+        async function initSupabase(roomId) {
+            console.log(`Initializing Supabase Room: ${roomId}`);
+            updateShareBanner('connecting');
+            if (!supabaseClient) {
+                const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.112.4');
+                supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+            sbChannel = supabaseClient.channel('rundown-room-' + roomId);
+            sendStateP2P = (data) => sbChannel.send({ type: 'broadcast', event: 'stateSync', payload: data });
+            sendCmdP2P = (data) => sbChannel.send({ type: 'broadcast', event: 'cmdSync', payload: data });
+            let receivedState = false;
             if (!isLiveView) {
                 p2pControlToken = await ensureControlToken(roomId);
-                cmdSync.onMessage = (data, meta) => {
-                    const peerId = meta && meta.peerId;
+                sbChannel.on('broadcast', { event: 'cmdSync' }, ({ payload: data }) => {
                     console.log("Host received command:", data);
                     const isAuthorized = p2pControlToken && data.token === p2pControlToken;
                     if (data.type === 'COMMAND_QUICK_NEXT') { if (isAuthorized) els.btnQuickNext.click(); }
                     else if (data.type === 'COMMAND_TOGGLE_MSG') { if (isAuthorized) els.btnShowMsg.click(); }
                     else if (data.type === 'COMMAND_TOGGLE_SWAP') { if (isAuthorized) els.btnSwapClock.click(); }
                     else if (data.type === 'REQUEST_STATE') {
-                        sendStateP2P(AppState, peerId);
+                        sendStateP2P(AppState);
                     }
-                };
-                p2pRoom.onPeerJoin = peerId => {
-                    console.log("Peer joined, proactively sending state to:", peerId);
-                    p2pPeers.add(peerId);
+                });
+                sbChannel.on('presence', { event: 'sync' }, () => {
+                    const state = sbChannel.presenceState();
+                    p2pPeers.clear();
+                    Object.entries(state).forEach(([key, presences]) => {
+                        if (presences.some(p => p.role === 'viewer')) p2pPeers.add(key);
+                    });
                     updateShareStatus();
-                    sendStateP2P(AppState, peerId);
-                };
-                p2pRoom.onPeerLeave = peerId => {
-                    p2pPeers.delete(peerId);
-                    updateShareStatus();
-                };
+                });
+                sbChannel.on('presence', { event: 'join' }, ({ newPresences }) => {
+                    if (newPresences.some(p => p.role === 'viewer')) sendStateP2P(AppState);
+                });
             }
             else {
-                let receivedState = false;
-                stateSync.onMessage = data => {
+                sbChannel.on('broadcast', { event: 'stateSync' }, ({ payload: data }) => {
                     console.log("Viewer received state update");
                     receivedState = true;
                     els.lConnecting.classList.add('hidden');
                     updateLiveUIFromState(data);
-                };
-                p2pRoom.onPeerJoin = peerId => {
-                     console.log("Found peer, requesting state from:", peerId);
-                     sendCmdP2P({ type: 'REQUEST_STATE' }, peerId);
-                };
-                const requestInterval = setInterval(() => {
-                    if (!receivedState && Object.keys(p2pRoom.getPeers()).length > 0) {
-                         console.log("State not received yet, requesting again...");
-                         sendCmdP2P({ type: 'REQUEST_STATE' });
-                    } else if (receivedState) {
-                        clearInterval(requestInterval);
-                    }
-                }, 2000);
+                });
             }
+            sbChannel.subscribe(async (status, err) => {
+                console.log("Supabase channel status:", status, err);
+                if (status === 'SUBSCRIBED') {
+                    updateShareBanner('connected');
+                    await sbChannel.track({ role: isLiveView ? 'viewer' : 'host', online_at: Date.now() });
+                    if (isLiveView) {
+                        sendCmdP2P({ type: 'REQUEST_STATE' });
+                        const requestInterval = setInterval(() => {
+                            if (receivedState) { clearInterval(requestInterval); }
+                            else { sendCmdP2P({ type: 'REQUEST_STATE' }); }
+                        }, 2000);
+                    }
+                } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+                    const msg = err && (err.message || String(err));
+                    const isLimit = msg && /too_many_connections/i.test(msg);
+                    updateShareBanner(isLimit ? 'limit' : 'error');
+                }
+            });
         }
-        function broadcastP2PState() {
-            if (p2pRoom && !isLiveView && sendStateP2P) {
+        function broadcastSupabaseState() {
+            if (sbChannel && !isLiveView && sendStateP2P) {
                 sendStateP2P(AppState);
             }
-        }
-        function updateShareStatus() {
-            const n = p2pPeers.size;
-            els.shareStatus.textContent = n === 0
-                ? 'Waiting for a viewer to connect…'
-                : (n === 1 ? '1 viewer connected' : `${n} viewers connected`);
         }
         function timeToSeconds(timeStr) {
             if (!timeStr) return 0;
@@ -1926,6 +1980,8 @@
             shareControlCheckbox: document.getElementById('share-control-checkbox'),
             shareStatus: document.getElementById('share-status'),
             shareQr: document.getElementById('share-qr'),
+            shareConnBanner: document.getElementById('share-conn-banner'),
+            shareConnText: document.getElementById('share-conn-text'),
         };
         let lastActiveSegmentId = null;
         function updateClockLoop() {
@@ -2057,7 +2113,7 @@
                 type: 'STATE_UPDATE',
                 payload: AppState
             });
-            broadcastP2PState();
+            broadcastSupabaseState();
         }
         function handleDataChange(index, field, value) {
             const seg = AppState.segments[index];
@@ -2320,7 +2376,7 @@
                         window.history.replaceState({}, '', newUrl);
                     } else {
                     }
-                    await initP2P(rId);
+                    await initSupabase(rId);
                 }
                 let shareUrl = window.location.href;
                 if (window.location.protocol === 'blob:') {
@@ -2364,8 +2420,9 @@
             els.btnPresent.addEventListener('click', () => {
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.set('view', 'live');
+                currentUrl.searchParams.set('present', '1');
                 window.open(currentUrl.href, 'RunDownLiveWindow', 'width=1280,height=720,menubar=no,toolbar=no,location=no,status=no');
-                setTimeout(broadcastState, 1000); 
+                setTimeout(broadcastState, 1000);
             });
         }
         window.addEventListener('keydown', (e) => {
@@ -2445,16 +2502,16 @@
                         updateLiveUIFromState(event.data.payload);
                     }
                 };
-                if (p2pRoomId) {
+                if (p2pRoomId && !isPresentPopup) {
                     els.lConnecting.classList.remove('hidden');
-                    initP2P(p2pRoomId);
+                    initSupabase(p2pRoomId);
                 } else {
                     syncChannel.postMessage({ type: 'REQUEST_STATE' });
                 }
             } else {
                 loadStateFromStorage();
                 if (p2pRoomId && getSavedControlToken(p2pRoomId)) {
-                    initP2P(p2pRoomId);
+                    initSupabase(p2pRoomId);
                 }
                 els.msgInput.value = AppState.message;
                 if (AppState.showMessage) {

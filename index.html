@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!---
-   RunDown • An intuitive countdown and segment timer for live events
+   RunDown • An intuitive segment timer for live events
    Initial: v2026.07.14
    Codecrafted by hello@stefanushosea.com
 --->
@@ -10,14 +10,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RunDown</title>
     <meta property="og:title" content="RunDown"/>
-    <meta name="description" content="An intuitive countdown and segment timer for live events • Codecrafted by stefanus@hosea.id">
-    <meta property="og:description" content="An intuitive countdown and segment timer for live events • Codecrafted by stefanus@hosea.id">
+    <meta name="description" content="An intuitive segment timer for live events • Codecrafted by stefanus@hosea.id">
+    <meta property="og:description" content="An intuitive segment timer for live events • Codecrafted by stefanus@hosea.id">
     <meta property="og:type" content="website"/>
     <meta property="og:url" content="https://rundown.hosea.id"/>
     <meta property="og:image" content="https://rundown.hosea.id/share.jpg"/>
     <meta property="og:image:type" content="image/jpeg"/>
-    <meta property="og:image:width" content="1200"/>
-    <meta property="og:image:height" content="630"/>
+    <meta property="og:image:width" content="1920"/>
+    <meta property="og:image:height" content="1080"/>
     <meta name="author" content="Stefanus Hosea"/>
     <meta name="keywords" content="rundown, run, time, countdown, clock, timer, presenter, presentation"/>
     <meta property="og:site_name" content="RunDown"/>
@@ -30,6 +30,7 @@
     <meta name="msapplication-navbutton-color" content="#242424"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="manifest" href="site.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;1,200;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
@@ -45,6 +46,9 @@
             --border-color: #dddddd;
             --input-bg: #ffffff;
             --font-main: 'Bai Jamjuree', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            display: none;
         }
         * {
             box-sizing: border-box;
@@ -77,7 +81,7 @@
         .pill-btn {
             background-color: rgba(128, 128, 128, 0.15);
             color: inherit;
-            padding: 8px 24px;
+            padding: 8px 16px;
             border-radius: 20px;
             font-size: 12px;
             border: 1px solid currentColor;
@@ -87,13 +91,6 @@
             background-color: rgba(128, 128, 128, 0.3); 
             opacity: 1;
         }
-        .pill-btn.outline {
-            background-color: transparent;
-            color: inherit;
-            border: 1px solid currentColor;
-            padding: 6px 16px;
-        }
-        .pill-btn.outline:hover { background-color: rgba(128,128,128,0.15); }
         .pill-btn.filled { 
             background-color: rgba(128, 128, 128, 0.15); 
             color: inherit; 
@@ -123,6 +120,9 @@
             flex-direction: column;
             position: relative;
             padding: 20px 40px;
+            min-height: 240px;
+            container-type: size;
+            overflow: hidden;
             background-image: linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,0) 50%);
         }
         .prog-header {
@@ -146,6 +146,37 @@
             vertical-align: super;
             opacity: .6;
         }
+        .prog-header .about {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .install-btn {
+            background-color: rgba(128, 128, 128, 0.15);
+            color: inherit;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 8px;
+            border: 1px solid currentColor;
+            opacity: 0.5;
+        }
+        .install-btn:hover { opacity: .9; }
+        .install-btn svg, .install-steps svg { width: 100%; height: 100%; display: block; }
+        .install-btn svg { width: 22px; height: 22px; }
+        .install-steps {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px;
+            text-align: left;
+            font-size: 14px;
+        }
+        .install-steps li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+        .install-steps .step-icon { flex: 0 0 32px; width: 32px; height: 32px; }
         .prog-header .credit {
             font-size: 10px;
             opacity: .25;
@@ -174,6 +205,9 @@
             align-items: center;
             justify-content: center;
         }
+        .prog-main-clock .segment-title { font-size: clamp(16px, min(5vw, 7cqh), 45px); }
+        .prog-main-clock .live-clock { font-size: clamp(30px, min(15vw, 26cqh), 200px); }
+        .prog-main-clock .countdown { font-size: clamp(14px, min(4vw, 6cqh), 45px); }
         .segment-title {
             font-size: clamp(20px, 5vw, 45px);
             font-weight: 600;
@@ -203,8 +237,29 @@
             margin-top: auto;
             padding-bottom: 10px;
         }
+        .resize-handle {
+            flex: 0 0 auto;
+            height: 12px;
+            margin: -6px 0;
+            position: relative;
+            z-index: 5;
+            cursor: row-resize;
+            touch-action: none;
+        }
+        .resize-handle::after {
+            content: '';
+            position: absolute;
+            left: 50%; top: 4px;
+            width: 100%; height: 4px;
+            background: currentColor;
+            opacity: .25;
+            transform: translate(-50%, -50%);
+            transition: opacity .2s;
+        }
+        .resize-handle:hover::after, .resize-handle.dragging::after { opacity: .6; }
         .prog-control-area {
             flex: 1;
+            min-height: 0;
             display: flex;
             padding: 20px 40px;
             gap: 40px;
@@ -602,8 +657,8 @@
         i, em { font-style: italic; }
         .live-clock, .countdown { font-variant-numeric: tabular-nums; }
         .digit { display: inline-block; min-width: 0.65em; text-align: center; }
-        .live-clock .digit:nth-child(3), .live-clock .digit:nth-child(6) { margin: 0 -2.5vw; }
-        .countdown .digit:nth-child(3), .countdown .digit:nth-child(6) { margin: 0 -.5vw; }
+        .live-clock .digit:nth-child(3), .live-clock .digit:nth-child(6) { margin: 0 -.16em; }
+        .countdown .digit:nth-child(3), .countdown .digit:nth-child(6) { margin: 0 -.125em; }
         .digit-fade { animation: digitFadeIn 0.3s ease-out; }
         @keyframes digitFadeIn {
             0% { opacity: 0.3; }
@@ -640,8 +695,11 @@
     <div id="program-view" class="view-container">
         <div id="prog-display-area" class="prog-display-area">
             <div class="prog-header">
-                <div class="logo">Run<strong>Down</strong><span class="version">v2026.08.28.1725</span></div>
-                <div class="credit">Codecrafted by <a href="https://stefanus.hosea.id" target="_blank"><strong>Stefanus Hosea</strong></a></div>
+                <div class="logo">Run<strong>Down</strong><span class="version">v2026.09.24</span></div>
+                <div class="about">
+                  <button id="btn-install" class="install-btn hidden" title="Install app" aria-label="Install app">
+                    + Install</button>
+                  <div class="credit">Codecrafted by <a href="https://stefanus.hosea.id" target="_blank"><strong>Stefanus Hosea</strong></a></div></div>
             </div>
             <div class="prog-main-clock">
                 <div id="prog-title" class="segment-title"></div>
@@ -654,11 +712,12 @@
                     <button id="btn-quick-next" class="pill-btn">QUICK NEXT</button>
                 </div>
                 <div style="display:flex; gap: 10px;">
-                    <button id="btn-share-link" class="pill-btn outline">SHARE LINK</button>
+                    <button id="btn-share-link" class="pill-btn outline">SHARE</button>
                     <button id="btn-present" class="pill-btn">PRESENT</button>
                 </div>
             </div>
         </div>
+        <div id="resize-handle" class="resize-handle" role="separator" aria-orientation="horizontal"></div>
         <div class="prog-control-area">
             <div class="table-section">
                 <div class="table-responsive">
@@ -750,6 +809,23 @@
             </div>
         </div>
     </div>
+    <div id="install-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-title">Install RunDown</div>
+            <ol class="install-steps" id="install-steps"></ol>
+            <div class="modal-actions">
+                <button id="btn-install-close" class="pill-btn outline">CLOSE</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        console.log(
+            "%cRunDown%c\nv2026.09.24\n\n%c<codecrafted by=“stefanus@hosea.id”>",
+                "color: #48aaff; font-size: 20px; font-weight: bold;",
+                "color: inherit;",
+                "color: #ffc429;"
+        );
+    </script>
     <script>
         var qrcode = function() {
           var qrcode = function(typeNumber, errorCorrectionLevel) {
@@ -1983,6 +2059,77 @@
             shareConnBanner: document.getElementById('share-conn-banner'),
             shareConnText: document.getElementById('share-conn-text'),
         };
+        (function setupResize() {
+            const handle = document.getElementById('resize-handle');
+            const area = document.getElementById('prog-display-area');
+            const view = document.getElementById('program-view');
+            const KEY = 'rundown-display-height';
+            const apply = (px) => {
+                const max = view.clientHeight - 120;
+                px = Math.max(240, Math.min(px, max));
+                area.style.flex = '0 0 ' + px + 'px';
+                                return px;
+            };
+            try { const saved = parseFloat(localStorage.getItem(KEY)); if (saved) apply(saved); } catch (e) {}
+            handle.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                handle.setPointerCapture(e.pointerId);
+                handle.classList.add('dragging');
+                const startY = e.clientY, startH = area.getBoundingClientRect().height;
+                let h = startH;
+                const move = (ev) => { h = apply(startH + ev.clientY - startY); };
+                const up = () => {
+                    handle.classList.remove('dragging');
+                    handle.removeEventListener('pointermove', move);
+                    handle.removeEventListener('pointerup', up);
+                    handle.removeEventListener('pointercancel', up);
+                    try { localStorage.setItem(KEY, h); } catch (e) {}
+                };
+                handle.addEventListener('pointermove', move);
+                handle.addEventListener('pointerup', up);
+                handle.addEventListener('pointercancel', up);
+            });
+        })();
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+        (function setupInstall() {
+            const btn = document.getElementById('btn-install');
+            const modal = document.getElementById('install-modal');
+            const steps = document.getElementById('install-steps');
+            const ua = navigator.userAgent;
+            const isSafari = /^((?!chrome|android|crios|fxios|edgios).)*safari/i.test(ua);
+            const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+            const shareIcon = '<svg class="step-icon" viewBox="140 60 520 620" fill="none" stroke="currentColor" stroke-width="32"><path d="M352 272h-112a48 48 0 0 0-48 48v272a48 48 0 0 0 48 48h320a48 48 0 0 0 48-48V320a48 48 0 0 0-48-48H448M400 448V110M300 208l100-100 100 100"/></svg>';
+            const plusIcon = '<svg class="step-icon" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="12"><rect x="50" y="50" width="100" height="100" rx="18"/><path d="M100 78v44M78 100h44"/></svg>';
+            steps.innerHTML =
+                '<li>' + shareIcon + '<span>Tap the <strong>Share</strong> button in Safari\'s toolbar.</span></li>' +
+                '<li>' + plusIcon + '<span>Choose <strong>Add to Home Screen</strong>, then tap <strong>Add</strong>.</span></li>';
+            let deferred = null;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferred = e;
+                btn.classList.remove('hidden');
+            });
+            window.addEventListener('appinstalled', () => {
+                deferred = null;
+                btn.classList.add('hidden');
+            });
+            if (isSafari && !standalone) btn.classList.remove('hidden');
+            btn.addEventListener('click', async () => {
+                if (deferred) {
+                    const p = deferred;
+                    deferred = null;
+                    p.prompt();
+                    await p.userChoice;
+                    btn.classList.add('hidden');
+                } else if (isSafari) {
+                    modal.classList.add('active');
+                }
+            });
+            document.getElementById('btn-install-close').addEventListener('click', () => modal.classList.remove('active'));
+            modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+        })();
         let lastActiveSegmentId = null;
         function updateClockLoop() {
             const nowSecs = getCurrentSeconds();
